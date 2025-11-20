@@ -1,0 +1,20 @@
+<!--pages/csv/csv.wxml-->
+<view class="container">
+  <button type="primary" bindtap="chooseCSV">1. 选择 CSV 文件</button>
+
+  <view wx:if="{{headers.length}}" class="box">
+    <text class="h2">表头</text>
+    <view class="tr head">
+      <text class="td" wx:for="{{headers}}" wx:key="*this">{{item}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{rows.length}}" class="box">
+    <text class="h2">前 20 行数据</text>
+    <scroll-view scroll-y class="list">
+      <view class="tr" wx:for="{{rows}}" wx:key="index">
+        <text class="td" wx:for="{{item}}" wx:for-item="cell" wx:key="*this">{{cell}}</text>
+      </view>
+    </scroll-view>
+  </view>
+</view>

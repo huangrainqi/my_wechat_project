@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+message User{
+
+string UserID = 1;   // 用户ID
+
+string Token  = 2;   // 用户Token
+
+}

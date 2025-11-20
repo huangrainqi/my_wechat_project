@@ -1,0 +1,43 @@
+<view class="custom-navigation">
+  <text class="navigation-title">小北羊</text>
+</view>
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <view class="input-group">
+
+      <text>A点小北羊数量 （单位：只）：</text>
+      <input type="number" placeholder="请输入A点的X值" value="{{ax}}" bindinput="onAXInput" />
+      <input type="number" placeholder="请输入A点的Y值" value="{{ay}}" bindinput="onAYInput" />
+    </view>
+
+
+
+    <view class="input-group">
+      <text>B点小北羊数量 （单位：只）：</text>
+      <input type="number" placeholder="请输入B点的X值" value="{{bx}}" bindinput="onBXInput" />
+      <input type="number" placeholder="请输入B点的Y值" value="{{by}}" bindinput="onBYInput" />
+    </view>
+
+    <view class="result">
+      <text>总共：</text>
+      <text>{{distance}} 只小北羊</text>
+    </view>
+
+    <view class="section">
+      <text>接收到的消息: {{receivedMessage}}</text>
+    </view>
+    <button bindtap="scanCode">扫描二维码</button>
+    <!-- <button bindtap="connectmqtt">连接mqtt</button>
+    <button bindtap="mqtt_pub_msg">mqtt_pub</button> -->
+
+    <!-- 1. 可编辑的文本框 -->
+    <view class="input-group">
+      <text>待读取的文本：</text>
+      <input placeholder="在这里输入或修改" value="{{editText}}" bindinput="onEditTextInput" />
+    </view>
+
+    <!-- 2. 点击拿值的按钮 -->
+    <button bindtap="readText">读取文本</button>
+
+  </view>
+</scroll-view>

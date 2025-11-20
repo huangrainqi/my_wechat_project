@@ -1,0 +1,24 @@
+/**index.wxss**/
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.scrollarea {
+  flex: 1;
+  overflow-y: hidden;
+}
+
+.custom-navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 44px; /* 标准导航栏高度 */
+  background-color: #ffffff;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.navigation-title {
+  font-size: 18px;
+  color: black;
+}
