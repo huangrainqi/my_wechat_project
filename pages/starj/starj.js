@@ -1,10 +1,10 @@
 import mqtt from '../../utils/mqtt.min.js'
 
 let client = null
-
+// node_msg_topic  = "node_msg_topic/" + this->vin_id
 Page({
   data: {
-    subTopic: '/test',
+    subTopic: 'node_msg_topic/vim_test_07',
     pubTopic: '/test',
     pubMsg: 'hello',
     received: ''
@@ -12,7 +12,6 @@ Page({
 
   onUnload() {
     console.log('mqtt onUnload');
-
     // 真正退出才销毁
     if (client && client.end) {
       client.end()
@@ -75,41 +74,6 @@ Page({
     })
   },
 
-  doConnect2() {
-    console.log('btn -> doconnect22');
-
-    wx.showToast({ title: 'btn', icon: 'none' });
-    const { subTopic } = this.data
-    if (!subTopic) {
-      wx.showToast({ title: 'Sub Topic 不能为空', icon: 'none' })
-      return
-    }
-    if (client && client.connected) return
-
-    const that = this
-    client = mqtt.connect('wxs://zq159840gp6.vicp.fun/mqtt', {
-          clientId: 'vim_test_072' ,
-          reconnectPeriod: 5000,
-          connectTimeout: 5000 
-        })
-
-    client.on('connect', () => {
-      console.log('MQTT 已连接');
-      
-      wx.showToast({ title: 'MQTT 已连接', icon: 'success' })
-      client.subscribe(subTopic, err => {
-        if (!err) that.log(`已订阅：${subTopic}`)
-      })
-    })
-
-    client.on('message', (topic, payload) => {
-      that.log(`[${topic}] ${payload.toString()}`)
-    })
-
-    client.on('error', err => {
-      that.log('连接出错：' + err)
-    })
-  },
   doPublish() {
     const { pubTopic, pubMsg } = this.data
     if (!pubTopic) {

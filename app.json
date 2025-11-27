@@ -1,7 +1,9 @@
 {
   "pages": [
+    "pages/starj/starj",
     "pages/mqtt/mqtt",
     "pages/index/index",
+    "pages/test_proto/test_proto",
     "pages/home/home"
   ],
   "tabBar": {
@@ -9,6 +11,14 @@
     "selectedColor": "#3cc51f",
     "backgroundColor": "#ffffff",
     "list": [
+      {
+        "pagePath": "pages/starj/starj",
+        "text": "starj"
+      },
+      {
+        "pagePath": "pages/test_proto/test_proto",
+        "text": "test_proto"
+      },
       {
         "pagePath": "pages/index/index",
         "text": "坐标页"

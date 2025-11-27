@@ -1,0 +1,44 @@
+<view class="page">
+  <!-- 顶部标题 -->
+  <view class="header">
+    <text class="title">MQTT 控制台</text>
+    <text class="sub">实时物联 · 即刻触达</text>
+  </view>
+
+  <!-- 卡片 1：订阅 -->
+  <view class="card">
+    <text class="label">Subscribe Topic</text>
+    <input class="input" value="{{subTopic}}" bindinput="onSubTopic" placeholder="/demo" placeholder-style="color:#6c7a89" />
+  </view>
+
+
+  <!-- 连接按钮 -->
+  <button class="btn primary" bindtap="doConnect">
+    <text>{{client&&client.connected?'已连接':'Connect'}}</text>
+  </button>
+
+  <!-- 实时日志 -->
+  <view class="card log">
+    <text class="label">Live Log</text>
+    <scroll-view scroll-y class="scroll">
+      <text class="code">{{received}}</text>
+    </scroll-view>
+  </view>
+
+  <!-- 卡片 2：发布 -->
+  <view class="card">
+    <text class="label">Publish Topic</text>
+    <input class="input" value="{{pubTopic}}" bindinput="onPubTopic" placeholder="/demo" placeholder-style="color:#6c7a89" />
+  </view>
+  <!-- 卡片 3：消息 -->
+  <view class="card">
+    <text class="label">Payload</text>
+    <textarea class="textarea" value="{{pubMsg}}" bindinput="onPubMsg" placeholder='{"msg":"hello"}' placeholder-style="color:#6c7a89" auto-height />
+  </view>
+
+  <!-- 发布按钮 -->
+  <button class="btn warn" bindtap="doPublish">
+    <text>Publish</text>
+  </button>
+
+</view>

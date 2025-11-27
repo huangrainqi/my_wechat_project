@@ -1,0 +1,725 @@
+syntax = "proto3";
+package brain_net_data_v3;
+option java_package         = "com.starj.xbrainnet";
+option java_outer_classname = "as_brain_net_data_v3";
+import "dispatch_msg.proto";
+
+message vector_type {
+  float x = 1;
+  float y = 2;
+  float z = 3;
+}
+
+message orientation_type{
+  float x = 1;
+  float y = 2;
+  float z = 3;
+  float w = 4;
+}
+
+message vector_2d_type {
+  float x = 1;
+  float y = 2;
+}
+
+message polyline_type{
+  repeated vector_type pos = 1;
+}
+
+message brain_gps_type{
+  uint64   basetime                   = 1;
+  int32    base_status                = 2;
+  double   longitude                  = 3;
+  double   latitude                   = 4;
+  float    altitude                   = 5;
+  float    hdop                       = 6;  // horizontal dilution of precision, 精度
+  uint32   gps_status                 = 7;  // gps 初始化 0 为失败, 1为成功
+  uint32   position_covariance_type   = 8;  //浮点解 等于3正常
+  repeated double position_covariance = 9;  // 位置协方差
+}
+
+
+message brain_app_locator_type{
+  uint64           basetime          = 1;
+  int32            base_status       = 2;
+  float            accuracy          = 3;
+  float            local_s           = 4;
+  vector_type      local_spd         = 5;
+  vector_type      local_pose        = 6;
+  vector_type      local_pose_angle  = 7;
+  orientation_type local_orientation = 8;
+}
+
+message app_planner_type{
+  float x      = 1;
+  float y      = 2;
+  float z      = 3;
+  float theta  = 4;
+  float kappa  = 5;
+  float dkappa = 6;
+  float s      = 7;
+  float v      = 8;
+  float a      = 9;
+  float t      = 10;  // second, time since epoch 1970
+}
+
+message brain_app_planner_type {
+  uint64   basetime              = 1;
+  repeated string lane_ids       = 2;
+  repeated app_planner_type traj = 3;
+}
+
+enum BatteryEnergy {
+  BT_UNKNOWN   = 0;
+  SUFFICIENT   = 1;
+  THREEQUSRTES = 2;
+  HALF         = 3;
+  AQUARTER     = 4;
+}
+
+enum FaultStatus {
+  FT_UNKNOWN     = 0;
+  GOOD           = 1;
+  LIGHTFAILURE   = 2;
+  DISPLAYFAILURE = 3;
+  CHASISFAILURE  = 4;
+  POWERFAILURE   = 5;
+}
+
+enum TaskState {
+  TS_UNKNOWN = 0;
+  BUSY       = 1;
+  IDLE       = 2;
+}
+
+message TastStatus {
+  string    task_id    = 1;
+  TaskState task_state = 2;
+}
+
+message VehicleStatus {
+  BatteryEnergy battery_energy = 1;
+  FaultStatus   fault_status   = 2;
+  TastStatus    task_status    = 3;
+}
+
+enum Lid_info {
+  UNKNOWN = 0;
+  open    = 1;
+  close   = 2;
+}
+
+message task_status_info {
+  uint32                        task_id                  = 1 ;
+  uint32                        VehicleStatus            = 2 ;   // 0.空闲 3. 达到目地的(规控单路线终点)
+  Lid_info                      lid_Status               = 3 ;
+  uint32                        light_status             = 4 ;   // 0:无效信息 1:开  2:关
+  uint32                        task_status              = 5 ;   // 小車当前任务阶段：配送模式(0.空闲 1.运送中 2.达到途经点 3.完成任务) ;跟随模式(0.无目标 1.找到目标 )
+  path_type                     path_traj                = 6 ;   // 小车当前任务的路径
+  lane_type                     cur_lane_id              = 7 ;   // 当前小车所在lane id
+  int32                         cur_target_point         = 8 ;   // 目标点 0：原点 1.装货点 2.途经点 3.卸货点 4.返回点
+  int32                         task_total_lines_ct      = 9 ;   // 任务总路线数
+  int32                         task_cur_line_index      = 10 ;  // 当前任务路线索引
+  bool                          is_trapped               = 11 ;  // 小车自驾是否被困住
+  int32                         task_mode                = 12 ;  // 任务模式 0:无 1:配送 2:建图 3:巡展 4:跟随
+  int32                         control_mode             = 13 ;  // 控制模式 0:无 1:避障 2：停障    (跟随模式下1开始,2停止)
+  create_map_info               create_map_info          = 14 ;   // 建图结果
+  road_type                     cur_road_id              = 15 ;  // 当前小车所在road id
+  bool                          temp                     = 16 ;
+  veh_conntrol_stop_status_type veh_conntrol_stop_status = 17 ;   // 当前控制车辆是否停止状态
+  state_management_signal_type  sm_signal                = 18 ;
+  veh_state_in_task_type veh_state_in_task               = 19 ; 
+  starj_dispatch.dispatch_info_type  dispatch_info       = 20 ; 
+}
+
+message veh_state_in_task_type{
+  bool  horn      = 1 ;    // 喇叭 
+  bool  clean     = 2 ;    // 清扫 
+}
+
+message veh_conntrol_stop_status_type{
+  bool                   veh_conntrol_is_stop     = 1;  // 当前控制车辆是否停止状态 false:无暂停 true:暂停
+  string                 veh_conntrol_stop_reason = 2;  // 停止原因，包括按键和调试
+  bool                   is_stop_by_hotkey_status = 3;  // 热键控制的停车状态， false:无停车 true:停车
+  scheduling_status_type scheduling_status        = 4;  // 调度系统控制的停车状态
+}
+
+message scheduling_status_type{
+  bool   is_stop_by_scheduling_status = 1;  // 0：无 1：停止
+  string stop_by_scheduling_reason    = 2;  // 调度停止原因
+}
+
+message veh_status_type {
+  uint32             gps_status               = 1;  // gps 初始化 0 为失败, 1为成功
+  battery_state_type battery_state            = 2;
+  uint32             position_covariance_type = 3;  //浮点解 等于3正常
+  float              odom                     = 4;  //里程计
+}
+
+message battery_state_type{
+  float  voltage     = 1;
+  float  current     = 2;
+  uint32 soc         = 3;  // "电池电量,范围0~100"
+  uint32 soh         = 4;  // "SOH电池健康度,范围0~100"
+  float  temperature = 5;
+  bool   charge      = 6;  // 充电状态
+}
+
+message comfirm_task_info{
+  bool valid          = 1 ;
+  bool finish_comfirm = 2 ;  //1确认完成
+  bool cancel_task    = 3 ;  //1确认取消
+}
+message target_info{
+  bool        valid   = 1 ;
+  vector_type pos     = 2 ;
+  uint32      task_id = 3 ;
+}
+
+message lid_task_info{
+  bool   valid    = 1 ;
+  int32  lid_task = 2 ;  //0:无效 , 1 开 ,2 关
+  uint32 task_id  = 3 ;
+}
+
+message light_task_info{
+  bool   valid      = 1 ;
+  int32  light_task = 2 ;  //0:无效 , 1 开 ,2 关
+  uint32 task_id    = 3 ;
+}
+
+message online_clients{
+  repeated string clients_vim = 1;
+}
+
+message path_line_msg{
+  repeated path_line_msg pos = 1 ;
+}
+
+message path_points_msg{
+  repeated path_line_msg  path_line = 1;
+}
+
+message gps_type{
+  double lat = 1;
+  double lon = 2;
+  double alt = 3;
+}
+
+message chasis_data_type{
+  uint64                 basetime          = 1;
+  chasis_data_info       chasis_can_data   = 2;
+  chassis_diagnosis_type chassis_diagnosis = 3;
+}
+
+message chasis_data_info{
+  float x_spd             = 1;  // m/s
+  float y_spd             = 2;  // m/s
+  float rad_wheel         = 3;  // radian
+  int64 left_rpm          = 4;  // 单位：rpm
+  float left_wheel_speed  = 5;  // m/s
+  int64 left_wheel_pulse  = 6;  // DR1 一圈 16384，DR2 一圈4096
+  int64 right_rpm         = 7;  // 单位：rpm
+  float right_wheel_speed = 8;  // m/s
+  int64 right_wheel_pulse = 9;
+}
+
+message chassis_diagnosis_type {
+  uint32 bms_soc                                   = 1;   // "电池电量,范围0~100"
+  uint32 bms_soh                                   = 2;   // "SOH电池健康度,范围0~100"
+  float  battery_voltage                           = 3;   // "电池电压，单位：0.01V"
+  float  battery_current                           = 4;   // "电池电流，单位：0.1A"
+  float  battery_temperature                       = 5;   // "电池温度,单位：0.1°C"
+  float  rl_wheel_voltage                          = 6;   // "电压   单位：0.1V"
+  float  rl_wheel_current                          = 7;   // "电流 单位：0.1A"
+  int32  rl_wheel_drive_temperature                = 8;   // "驱动器温度 单位：1°C"
+  int32  rl_wheel_electrical_machinery_temperature = 9;   // "电机温度 单位：1°C"
+  int32  rl_wheel_drive_special_space              = 10;  // "驱动器特殊状态 按照驱动器特殊状态表"
+  float  rr_wheel_voltage                          = 11;  // "电压   单位：0.1V"
+  float  rr_wheel_current                          = 12;  // "电流 单位：0.1A"
+  int32  rr_wheel_drive_temperature                = 13;  // "驱动器温度 单位：1°C"
+  int32  rr_wheel_electrical_machinery_temperature = 14;  // "电机温度 单位：1°C"
+  int32  rr_wheel_drive_special_space              = 15;  // "驱动器特殊状态 按照驱动器特殊状态表"
+  float  f_wheel_current                           = 16;  // 前车轮(2前轮是一个电机)驱动器数据反馈，只有电流是有效值
+  int32  f_wheel_drive_special_space               = 17;  // 特殊状态 按照驱动器特殊状态表
+  int32  bms_working_mode_status                   = 18;  // 工作状态  0 正常 1 警告 2保护
+  int32  bms_warning_status                        = 19;  // 警告状态  查看警告状态表
+  int32  bms_protection_status                     = 20;  // 保护状态  查看保护状态表
+  int32  bms_charging_status                       = 21;  // 充电标识  0 未充电 ，1 充电中
+  int32  lid_status                                = 22;  // 0 盖子关闭 1 盖子打开
+  uint32 control_mode                              = 23;  // 0x00: 待机 / 0x01: 遥控 / 0x02: CAN控制 / 0x03: 随动
+  uint32 emergency_stop_status                     = 24;  // 急停  0: 未触发 / 1: 触发
+  uint32 touch_sensor_stop_status                  = 25;  // 防撞条 0: 未触发  / 1: 触发
+  uint32 error_electrical_machinery                = 26;  // 电机故障
+  uint32 error_drive                               = 27;  // 驱动故障
+  uint32 error_communicate                         = 28;  // 通讯故障
+  uint32 error_other                               = 29;  // 其他故障
+  uint32 error_battery                             = 30;  // 电源故障
+  uint32 rc_toggle_switch                          = 31;  // 拨动开关
+  int32  left_joy_horiz_axis                       = 32;  // 左摇杆水平轴
+  int32  left_joy_vert_axis                        = 33;  // 左摇杆垂直轴
+  int32  joy_left_vra                              = 34;  // 左旋钮VRA
+  int32  right_joy_horiz_axis                      = 35;  // 右摇杆水平轴
+  int32  right_joy_vert_axis                       = 36;  // 右摇杆垂直轴
+  int32  joy_right_vra                             = 37;  // 右旋钮VRA
+  uint32 gear_status                               = 38;  // 档位信息, 0:空档 , 1:前进档 , 2:后退档 , 3:驻车档
+  uint32 black_box_status                          = 39;  // # 0:失败，初始化失败 ; 1:正常，检测到sd卡
+  uint32 front_light_status                        = 40;  // # 0:关闭，1:打开
+  ChassisOtherInfo  chassis_other_info             = 41;  // 底盘其他信息
+  PowerOffStatus  power_off_status                 = 42;  // 关机状态
+}
+
+message PowerOffStatus{
+   int32 power_off_status = 1;  // # 0:关闭，1:打开
+   int32 power_off_countdown = 2;  // # 倒计时
+}
+
+message ChassisOtherInfo {
+  int32  water_spray                 = 1;   // # 喷水状态  0: 关闭; 1       : 打开
+  int32  sweeping                    = 2;   // # 清扫状态 0 : 关闭; 1       : 打开
+  int32  lid_status                  = 3;   // # 盖子状态 0 : 盖子关闭; 1     : 盖子打开
+  uint32 black_box_status            = 4;   // # 黑匣子 0  : 失败，初始化失败 ; 1: 正常，检测到sd卡
+  uint32 horn                        = 5;   // # 蜂鸣器 0  : 关闭; 1       : 打开
+  int32  rain_sensor                 = 6;   // # 雨量 (百分比)
+  int32  water_level_sensor          = 7;   // # 水箱液位 (百分比)
+  int32  rain_sensor_offline         = 8;   // # 雨量传感器离线
+  int32  water_level_sensor_offline  = 9;   // # 水箱液位传感器离线
+  int32  garbage_sensor_offline      = 10;  // 满溢(垃圾)传感器离线
+  int32  garbage_detect_distance_val = 11;  // 垃圾检测距离 (百分比)
+  int32  auto_water_spray_switch     = 12;  //自动洒水功能开关 // 0: 关闭; 1: 打开
+}
+
+message img_type{
+  uint64 basetime    = 1 ;
+  string camera_id   = 2 ;
+  uint32 width       = 3 ;
+  uint32 height      = 4 ;
+  bytes  data        = 5 ;
+  string format      = 6 ;  // "jpeg", "png" ...
+  string description = 7 ;
+}
+
+message car_info_type{
+  string                 car_vin               = 1;  // client VIN
+  brain_app_locator_type brain_app_locator     = 2;
+  brain_gps_type         brain_gps             = 3;
+  float                  odom                  = 4;  //里程计
+  brain_gps_type         pbox_info             = 5;
+  repeated               img_type     img_list = 6;
+  string                 car_type              = 7;  // 车型 CR3 DR5
+}
+
+message brain_node_data {
+  uint64                     basetime              = 1;   // ms
+  car_info_type              car_info              = 2;
+  task_status_info           task_status           = 3;
+  chasis_data_type           chasis_data           = 4;
+  system_status_type         system_status         = 5;
+  env_info_type              env_info              = 6;
+  remote_control_type        remote_control        = 7;   // 远程遥控状态
+  rt3588_status_type         rt3588_status         = 8;
+  veh_confirm_recv_path_type veh_confirm_recv_path = 9;   // 车端确认收到路线反馈
+  nvm_device_state_type      nvm_device_state      = 10;
+  power_on_off_type          power_on_off_info     = 11;  // # 电源开关
+}
+
+message nvm_device_state_type{
+  int32             auto_water_spray_switch = 1;  // # 喷水开关  0: 关闭; 1 : 打开
+  int32             front_light             = 2;  // # 前灯开关  0: 关闭; 1 : 打开
+  int32             horn_auto_switch        = 3;  // # 喇叭开关  0: 关闭; 1 : 打开
+}
+
+message state_management_signal_type{
+    int32 rdmodulecom_tracking_mode = 1;
+    int32 rdmodulecom_sensorfusion = 2;
+    int32 rdmodulecom_localization = 3;  
+    int32 rdmodulecom_motionplanning = 4;
+
+    int32 rdmodulecom_1_state = 5;
+// 任务完成状态：
+// 0: 空闲 1: 任务完成 2: 任务中
+
+    int32 rdmodulecom_2_state = 6;
+// 异常状态：
+// 值   状态名称                             说明
+// 0    NORMAL                             正常状态
+// 1    LOCATION_NOT_READY                 定位未就绪
+// 2    MAP_NOT_READY                      地图未就绪
+// 3    REFERENCE_LINE_NOT_READY           参考线未就绪
+// 4    PARKING_SLOT_OCCUPIED              停车位被占用
+// 5    EMERGENCY_STOP                     紧急停车
+// 6    COLLISION_BOUNDARY                 碰撞边界
+// 7    FAR_AWAY_FROM_REFERENCE_LINE       远离参考线
+// 8    DESTINATION_OCCUPIED               目标点被占用
+// 9    ROAD_OCCUPIED                      道路被占用
+// 10   MAP_NOT_MATCHED                    地图不匹配
+// 11   FAR_AWAY_FROM_TARGET_POINT         远离目标点
+// 12   TRAPPED                            车辆被困
+
+    int32 rdmodulecom_3_state = 7;
+// # 清扫状态： 
+// # 0: 不清扫 1: 清扫
+
+    int32 rdmodulecom_4_state = 8;
+// 当前任务类型：
+// 值   状态名称                             说明
+// -1   DEFAULT                            默认值
+// 0    PATH                               沿路径行驶
+// 1    EDGE_SWEEPING                      贴边清扫
+// 2    COVERAGE_SWEEPING                  覆盖清扫
+// 3    ORIENTED_POI                       有向POI泊入
+// 4    PARKING                            泊车
+// 5    ADJUST_ORIENTATION                 调整朝向
+// 6    PATH_SWEEPING                      路径清扫
+
+    int32 rdmodulecom_5_state = 9;
+    int32 rdmodulecom_6_state = 10;
+    int32 rdmodulecom_7_state = 11;
+    int32 rdmodulecom_8_state = 12;
+    int32 rdmodulecom_9_state = 13;
+    int32 rdmodulecom_10_state = 14;
+    int32 rdmodulecom_11_state = 15;
+    int32 rdmodulecom_12_state = 16;
+    int32 rdmodulecom_13_state = 17;
+    int32 rdmodulecom_14_state = 18;
+    int32 rdmodulecom_15_state = 19;
+    int32 rdmodulecom_16_state = 20;
+    int32 rdmodulecom_17_state = 21;
+    int32 rdmodulecom_18_state = 22;
+    int32 rdmodulecom_19_state = 23;
+    int32 rdmodulecom_20_state = 24;
+    int32 rdmodulecom_21_state = 25;
+    int32 rdmodulecom_22_state = 26;
+    int32 rdmodulecom_23_state = 27;
+    int32 rdmodulecom_24_state = 28;
+    int32 rdmodulecom_25_state = 29;
+    float rdmodulecom_26_state = 30;
+    float rdmodulecom_27_state = 31;
+    float rdmodulecom_28_state = 32;
+    float rdmodulecom_29_state = 33;
+    float rdmodulecom_30_state = 34;
+} 
+
+message rt3588_status_type {
+  float cpu_temperature = 1;  // CPU温度
+  float cpu_usage       = 2;  // CPU使用率
+}
+
+message software_version_type{
+  string   version                 = 1;
+  repeated string submoduleVersion = 2;
+}
+
+message server_type{
+  int32 env_type = 1;  // 1: 生产环境 2: 测试环境 3: 开发环境 4:本地
+}
+
+message map_type{
+  string name        = 1;
+  string id          = 2;
+  string map_version = 3;
+  string sha_version = 4;
+  string map_file_path =5; //地图云端Venue.json路径
+}
+
+message env_info_type{
+  software_version_type software_version = 1;
+  map_type              map_info         = 2;
+  server_type           server_info      = 3;
+}
+
+message system_status_type {
+  cpu_usage_type          total_cpu_usage                = 1 ;
+  repeated                cpu_usage_type all_cpu_usage   = 2 ;
+  mem_info_type           mem_info                       = 3 ;
+  float                   voltage                        = 4 ;
+  float                   temperature                    = 5 ;
+  repeated                process_info_type process_info = 6 ;
+  repeated                node_info_type node_info       = 7 ;
+  repeated                string exist_nodes             = 8 ;
+  repeated                string non_exist_nodes         = 9 ;
+  firmware_diagnosis_type firmware_diagnosis             = 10 ;
+  mqtt_status_type        mqtt_status                    = 11 ;
+  int32                   sau_status                     = 100 ;  // 0. idle 1.initing 2.error 3.ready  （硬件，软件节点，定位）
+  int32                   initing_status                 = 101 ;  // 针对初始过程中拆分状态 , 1.软硬件正常状态（3588判断定位状态）
+}
+
+
+message mqtt_status_type{
+  int32  state = 1;  // 0. none 1. connected 2. disconnected
+  string msg   = 2;
+}
+
+message firmware_diagnosis_type{
+  repeated firmware_diagnosis firmware_diagnosis_info = 1;
+}
+
+message firmware_diagnosis{
+  uint64   basetime      = 1;
+  string   firmware_name = 2;
+  repeated string state  = 3;  // 0:正常  >0:异常
+  repeated string msg    = 4;
+  int32    level         = 5;  // 0 正常 1 警告 2 异常
+}
+
+message cpu_usage_type {
+  uint32 index     = 1 ;
+  float  rt_usage  = 2 ;
+  float  avg_usage = 3 ;
+}
+
+message process_info_type {
+  uint32 pid              = 1 ;
+  string proc_name        = 2 ;
+  float  memory_usage_pct = 3 ;
+  float  cpu_percent_pct  = 4 ;
+}
+
+message node_info_type {
+  string node_name = 1 ;
+  string topic     = 2 ;
+  float  hz        = 3 ;
+}
+
+message mem_info_type {
+  float total_mem_mb = 1 ;
+  float used_mem_mb  = 2 ;
+  float used_mem_pct = 3 ;
+}
+
+    //  web app
+message lane_type {
+  int32  lane_id = 1  ;
+  uint32 type    = 2  ;
+      // int32     road_id            = 3  ;
+  repeated  gps_type  trajs          = 4  ;
+  repeated  int32 prev_lane_id       = 5  ;
+  repeated  int32 next_lane_id       = 6  ;
+  float     min_speed                = 7  ;
+  float     max_speed                = 8  ;
+  int32     traffic_type             = 9  ;  //  # 0.未知 1.双向单道道 2.双向多车道 3.单向车道
+  int32     layer_type               = 10 ;  //  # 0.未知 1.车道 2.intersection路口 ，3.出车区域
+  float     lane_width               = 11 ;
+  road_type road_info                = 12 ;  //  # 路段信息
+  repeated  vector_type enu_pos_list = 13 ;  //  # 路段ENU坐标
+}
+
+message road_type {
+  uint64   road_id             = 1 ;
+  uint32   type                = 2 ;
+  repeated int32  prev_road_id = 3 ;
+  repeated int32  next_road_id = 4 ;
+  float    min_speed           = 5 ;
+  float    max_speed           = 6 ;
+  int32    traffic_type        = 7 ;  // 0.未知 1.双向单道道 2.双向多车道 3.单向车道
+  int32    layer_type          = 8 ;  // 0.未知 1.车道 2.intersection路口 3.出车区域
+  float    road_width          = 9 ;
+}
+
+message destination_type  {
+  uint32        id                = 1 ;   // 目的地 id
+  int32         target_type       = 2 ;   // 目的地类型    0: 未知 1：终点 2：车位 3：充电桩 99 roi
+  int32         category          = 3 ;   // 目的地朝向信息  0: 无朝向  1：有朝向
+  string        name              = 4 ;   // poi name
+  vector_type   pos               = 5 ;   // 目的地地图坐标
+  float         theta             = 6 ;   // 目的地车辆朝向弧度
+  gps_type      gps_pos           = 7 ;   // 目的地gps坐标
+  polyline_type slot_enu_polyline = 8 ;   // 车位4个点(enu)坐标
+  vector_type   center            = 9 ;   // 目的地地图坐标
+  string        road_id           = 10 ;
+  gps_type      wgs_center        = 11 ;
+}
+
+message path_type{
+  uint32           start_point_index       = 1;
+  uint32           target_point_index      = 2;
+  string           path_name               = 3;
+  repeated         gps_type trajs          = 4;
+  repeated         lane_type lane_id_list  = 5;
+  int32            target_point            = 6;   //目标点 0：原点 1.装货点 2.途经点 3.卸货点 4.返回点
+  destination_type destination_info        = 7 ;  //目的地信息
+  int32            target_point_type       = 8;   // 0: 普通点 1：虚拟点
+  int32            clean_mode              = 9;   // 路线清扫模式：1路径、2路径+贴边 3.无清扫
+  int32            target_point_clean_mode = 10;  // 目的地清扫模式: 1覆盖模式,2普通模式
+}
+
+message web_task_info {
+    web_order_task_info  web_order_info  = 1;  // 云端路线下发
+    web_task_status_type web_task_status = 2;  // 云端任务状态
+}
+
+message web_order_task_info{
+  uint64           basetime              = 1 ;
+  uint32           tast_stage            = 2 ;  //小車当前任务阶段：0.空闲 1.运送中 2.达到途经点 3.完成任务 4.故障
+  uint32           order_status          = 3 ;  //0无订单, 1订单动作中, 2订单完成
+  brain_storm_data storm_data            = 4 ;
+  vector_type      a_pos                 = 5 ;
+  vector_type      b_pos                 = 6 ;
+  repeated         path_type  path_lines = 7 ;  //每一個階段的路徑
+  map_type         map_info              = 8 ;
+  bool             vaild_flag            = 9 ;  // 0:无效信息 1:有效信息
+  car_info_dispatch car_info             = 10 ; // 仿真车辆信息
+  cr3_setting_config cr3_info            = 11 ; // cr3 车辆配置
+  string           channel               = 12 ; // 下发来源app、car
+}
+
+message brain_storm_data {
+  uint64 basetime     = 1;
+  int32  base_status  = 2;  // detail command id 0:normal 1:error record
+  string task_id      = 3;  //
+  int32  command_mode = 4;  // 0-standby, 1-setpose, 2-joystick, 3-autodrive
+                                     // controller_type command_contr  = 5;     // remote control
+  bytes        command_traj = 6;     // x,y,theta+ds_arr+rou_arr
+  vector_type  task_start_pos = 7;   // x,y,theta
+  vector_type  task_target_pos = 8;  // x,y,theta
+  ErrorMessage error_msg = 9;        // recording error messages
+  order_task_info order_task         = 10;
+  int32           task_mode          = 11;   // 任务模式 0:无 1:配送 2:建图 3:巡展 4:跟随
+  int32           control_mode       = 12 ;  // 控制模式 0：无 1:避障 2：停障
+  bool            is_scheduling_mode = 13 ;  // 是否调试模式
+}
+
+message ErrorMessage {
+  uint32 msg_id     = 1;
+  uint64 web_time   = 2;  //纳秒
+  uint64 end_time   = 3;
+  string version    = 4;
+  string error_type = 5;
+  string sub_type   = 6;
+  string msg        = 7;
+}
+
+message order_task_info{
+  target_info       target_pos   = 1 ;
+  lid_task_info     lid_task     = 2 ;
+  comfirm_task_info task_comfirm = 3 ;
+  uint32            task_id      = 4 ;
+  light_task_info   light_task   = 5 ;  //0:无效信息 1:开  2:关
+}
+
+// 3588
+message container_info {
+  int32                        lid_status                   = 1 ;   // 货箱状态  0 盖子关闭 1 盖子打开
+  bool                         reset_position               = 2 ;   // 重定位
+  string                       reset_position_id            = 3 ;   // 重定位ID
+  front_light_switch_type      front_light_switch           = 4 ;   // 前灯开关
+  instruction_type             instruction                  = 5 ;   // 重启sau
+  server_switch_type           server_swith                 = 6 ;   // 服务器切换
+  task_mode_type               task_mode                    = 7 ;
+  set_poi_type                 set_poi                      = 8 ;   // 设置poi
+  remote_control_type          remote_control_info          = 9 ;   // 远程控制信息
+  function_btn_type            function_btn_info            = 10 ;  // 功能按钮信息
+  clear_chassis_warn_type      clear_chassis_warn_info      = 11 ;  // 解除底盘报警，针对紧停
+  rt3588_status_type           rt3588_status_info           = 12 ;  // 3588状态
+  horn_control_type            horn_control_info            = 13 ;  // 鸣笛控制信息
+  auto_water_spray_switch_type auto_water_spray_switch_info = 14 ;  // 自动洒水开关
+  auto_horn_switch_type        auto_horn_switch_info        = 15 ;  // 自动喇叭开关
+  power_on_off_type            power_on_off_info            = 16 ;  // 开关机
+  uint64                       basetime                     = 17 ;  // 3588 时间戳 (秒)
+}
+
+message horn_control_type{
+  bool  vaild_flag = 1 ;  // 0:无效信息 1:有效信息
+  int32 horn    = 2 ;  // 0:关 1:开
+}
+
+message clear_chassis_warn_type{
+  bool  vaild_flag = 1 ;  // 0:无效信息 1:有效信息
+  int32 clear_val  = 2 ;  // 解除
+}
+
+message function_btn_type{
+  bool vaild_flag = 1 ;  // 0:无效信息 1:有效信息
+  bool btn1_click = 2 ;  // 0:无 1:触发
+}
+
+message remote_control_type{
+  bool   vaild_flag       = 1 ;  // 0:无效信息 1:有效信息
+  bool   control_switch   = 2 ;  // 0:关闭 1:开启
+  int32  control_mode     = 3 ;  // 任务模式 0:无 1：蓝牙模式 2：远程网络模式
+  string mobile_device_id = 4;   //手机设备ID
+}
+
+message task_mode_type {
+  bool   vaild_flag      = 1 ;  // 0:无效信息 1:有效信息
+  int32  mode            = 2 ;  // 任务模式 0:无 1:配送 2:建图 3:巡展 4:跟随
+  int32  task_switch     = 3 ;  // -1：切换 0:停止 1:开始
+  string map_name        = 4 ;  // 地图名称(只针对建图模式)
+  int32  control_mode    = 5 ;  // 控制模式 0：无 1:避障 2：停障
+  int32  create_map_type = 6 ;  // 0:常规建图 1:快速建图
+}
+
+message create_map_info {
+  string info_msg = 1;   // 快速建图错误码
+  int32  status   = 2 ;  // 0:未知 1:成功 2：失败
+}
+
+message set_poi_type{
+  bool   vaild_flag = 1 ;  // 0: 无效信息  1: 有效信息
+  int32  index      = 3 ;
+  int32  type       = 4 ;
+  string poi_name   = 5 ;  // 0: 无  1：普通poi 2: 带朝向poi
+}
+
+message server_switch_type{
+  bool  vaild_flag = 1;   // 0: 无效信息    1: 有效信息
+  int32 env_type   = 2 ;  // 1: 生产环境 2: 测试环境 3: 开发环境
+}
+
+message instruction_type{
+  bool  vaild_flag = 1;   // 0: 无效信息   1: 有效信息
+  int32 val        = 2 ;  // 1：重启sau
+}
+
+message front_light_switch_type{
+  bool  vaild_flag   = 1;  //0:无效信息 1:有效信息
+  int32 light_switch = 2;  //0:关      1:开
+}
+
+message web_task_status_type { // 云端任务状态
+  bool   vaild_flag = 1;  //0:无效信息 1:有效信息
+  string status     = 2;  // “start” "stop" "resume" "pause"
+}
+
+message auto_water_spray_switch_type { // 自动洒水功能开关
+  bool  vaild_flag = 1;  //0:无效信息 1:有效信息
+  int32 water_switch = 2;  //0:关      1:开
+}
+
+message auto_horn_switch_type { // 自动喇叭功能开关
+  bool  valid_flag = 1;  //0:无效信息 1:有效信息
+  int32 auto_horn_switch_val = 2;  //0:关      1:开
+}
+
+
+message veh_confirm_recv_path_type { // 车端确认收到路线反馈
+  bool  vaild_flag = 1;  //0:无效信息 1:有效信息
+  int32 status = 2;  // 0:无 1:收到
+}
+
+message car_info_dispatch {
+    uint32 model = 1; // 0:匀速模式 1:随机模式
+    float speed = 2; // 速度值
+    float min_speed = 3; // 最小速度
+    float max_speed = 4; // 最大速度
+}
+
+message cr3_setting_config {
+  uint32 low_battery = 1; //电量低设置 0不设置，1设置
+  uint32 low_water = 2; //水量低设置 0不设置，1设置
+  uint32 rain = 3; //下雨设置 0不设置，1设置
+  uint32 waste_full = 4; //垃圾满设置 0不设置，1设置
+  uint32 spray_water = 5; //洒水设置 0不设置，1设置
+}
+
+message dispatch_type{
+  bool   valid_flag = 1;             //  0:无效信息 1:有效信息
+  starj_dispatch.dispatch_info_type  dispatch_info = 2;
+}
+
+message power_on_off_type{
+  bool   sau_on_valid_flag = 1;  // 开机 0:无效信息 1:有效信息
+  uint64 sau_power_on_time = 2;  // 开机唤醒时间戳 秒
+  bool   sau_power_off     = 3;  // sau关机 0是关机 1是开机 // toto 需要修改proto
+  bool   power_off         = 4;  // 整车关机 2是关机   // toto 需要修改proto
+}

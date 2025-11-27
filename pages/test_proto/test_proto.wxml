@@ -1,0 +1,10 @@
+<!--pages/csv/csv.wxml-->
+<view class="container">
+ <!-- 把按钮包一层，加上居中样式 -->
+<view style="display:flex;justify-content:center;">
+  <button class="btn primary" bindtap="btn_funtion">
+    <text>{{'btntest'}}</text>
+  </button>
+</view>
+ 
+</view>

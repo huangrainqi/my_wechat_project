@@ -1,0 +1,42 @@
+syntax = "proto3";
+package starj_dispatch;
+option java_package         = "com.starj.xbrainnet";
+option java_outer_classname = "DispatchInfoProto";
+//version 2025.9.15
+
+message vector_type {
+    float x = 1;
+    float y = 2;
+    float z = 3;
+}
+
+enum command_type {
+    DEFAULT        = 0;
+    PAUSE          = 1;
+    RESUME         = 2;
+    SPEEDDOWN      = 3;
+    PULLOVER_LEFT  = 4;
+    PULLOVER_RIGHT = 5;    
+}
+
+message car_info_type{
+    uint64                 basetime          = 1;  // 从brain_node data中获取的时间
+    uint64                 cloud_time        = 2;  // 调度系统中获取的时间
+    string                 car_vin           = 3;  // client VIN
+    uint32                 car_status         = 4;  // 0.车辆处于行驶状态 1.车辆处于停止状态
+    vector_type            local_speed       = 5;
+    vector_type            local_pose        = 6;
+    vector_type            local_pose_angle  = 7;
+}
+
+message dispatch_info{
+    command_type           command           = 1;  // 调度系统控制的停车状态
+    float                  max_speed         = 2;  // 调度系统设定的车辆最大速度
+    repeated vector_type   parking_area      = 3;  // 调度系统设定的临停区
+}
+
+message dispatch_info_type{
+    car_info_type          self_car              = 1;
+    repeated car_info_type others            = 2;  // 受调度影响的其他车辆的信息   
+    dispatch_info          dispatch_status   = 3;  
+}
