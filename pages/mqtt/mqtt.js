@@ -1,4 +1,4 @@
-import mqtt from '../../utils/mqtt.min.js'
+import mqtt from '../../utils/mqtt/mqtt.min.js'
 
 let client = null
 

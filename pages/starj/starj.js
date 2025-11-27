@@ -1,15 +1,27 @@
-import mqtt from '../../utils/mqtt.min.js'
+// mqtt 
+import mqtt from '../../utils/mqtt/mqtt.min.js'
+// // proto 
+const protobuf = require('../../utils/proto/weichatPb/protobuf.js');
+var  node_js = require('../../proto/starj_proto/brain_net_data_v5.js');
+var NodeRoot = protobuf.Root.fromJSON(node_js);
+var  dispatch_js = require('../../proto/starj_proto/dispatch_msg');
+var DispatchRoot = protobuf.Root.fromJSON(dispatch_js);
+var node_pb = NodeRoot.lookupType("brain_net_data_v3.brain_node_data");
 
 let client = null
-// node_msg_topic  = "node_msg_topic/" + this->vin_id
 Page({
   data: {
-    subTopic: 'node_msg_topic/vim_test_07',
+    subTopic: 'node_msg_topic/vehicle_08',
     pubTopic: '/test',
     pubMsg: 'hello',
     received: ''
   },
-
+  convertLongToNumber(longObj) {
+    if (longObj && typeof longObj === 'object' && 'low' in longObj) {
+      return longObj.low + (longObj.high * 0x100000000);
+    }
+    return longObj;
+  },
   onUnload() {
     console.log('mqtt onUnload');
     // 真正退出才销毁
@@ -66,7 +78,10 @@ Page({
     })
 
     client.on('message', (topic, payload) => {
-      that.log(`[${topic}] ${payload.toString()}`)
+      // that.log(`[${topic}] ${payload.toString()}`)
+      const u8 = new Uint8Array(payload);  
+      var deMessage = node_pb.decode(u8);
+      console.log("接收到的protomsg :", this.convertLongToNumber(deMessage.basetime) , " , buffer 长度: ", u8.length);
     })
 
     client.on('error', err => {

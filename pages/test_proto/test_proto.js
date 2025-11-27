@@ -1,13 +1,10 @@
-const protobuf = require('../../proto/tools/weichatPb/protobuf.js');
+const protobuf = require('../../utils/proto/weichatPb/protobuf.js');
 
 var  node_js = require('../../proto/starj_proto/brain_net_data_v5.js');
 var NodeRoot = protobuf.Root.fromJSON(node_js);
 
 var  dispatch_js = require('../../proto/starj_proto/dispatch_msg');
 var DispatchRoot = protobuf.Root.fromJSON(dispatch_js);
-
-
-
 
 function connectWebSocket(page) {
   const socketTask = wx.connectSocket({
@@ -28,36 +25,19 @@ function connectWebSocket(page) {
   // 监听WebSocket连接打开事件
   socketTask.onOpen(function (res) {
     console.log('WebSocket连接已打开');
-    //////////////////////
-    // const node_payload = new node_pb.brain_node_data();   // 或 pb.LoginReq.create()
-    // node_payload.basetime = 123
-    // const u8      = node_pb.brain_node_data.encode(node_payload).finish();
-    // const ab      = u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength);
-    //////////////////////
-    // const node_payload = new node_pb.vector_type();   // 或 pb.LoginReq.create()
-    // node_payload.x = 1.2 
-    // const u8 = node_pb.vector_type.encode(node_payload).finish();
-
-    // const ab = u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength);
-
     var node_pb = NodeRoot.lookupType("brain_net_data_v3.brain_node_data");
     var node_msg = node_pb.create(); // 创建空对象
     node_msg.basetime = 11
     var buffer = node_pb.encode(node_msg).finish();
-
-    //////////////////////
     socketTask.send({ data: buffer, success: () => console.log('LoginReq 已发送') });
   });
 
-  // 监听WebSocket接收消息事件
-  socketTask.onMessage(function (res) {
-    console.log('~~~~接收到服务器消息:', res.data);
+   // 监听WebSocket接收消息事件
+   socketTask.onMessage(function (res) {
     const u8 = new Uint8Array(res.data);      // 转成 Uint8Array
     var node_pb = NodeRoot.lookupType("brain_net_data_v3.brain_node_data");
     var deMessage = node_pb.decode(u8);
-    console.log("接收到的protomsg :", deMessage);
-
-    ///////////////////////////
+    console.log("接收到的protomsg :", deMessage , " , buffer 长度: ", u8.length);
   });
 
   // 监听WebSocket关闭事件
@@ -81,7 +61,6 @@ function connectWebSocket(page) {
   page.setData({
     websocketStatus: 'connecting'
   });
-
   return socketTask;
 }
 
@@ -98,7 +77,7 @@ Page({
   
   btn_funtion() {
     console.log("btn click")
-    
+    // proto 使用例子
     var dispatch_info_pb = NodeRoot.lookupType("starj_dispatch.dispatch_info");
     var dispatch_info_msg = dispatch_info_pb.create(); // 创建空对象
     dispatch_info_msg.max_speed = 1.2
@@ -142,7 +121,6 @@ Page({
   }, 
   onLoad() {
     this.socketTask = connectWebSocket(this);
-    
     // this.btn_funtion()
   }
 })
