@@ -1,33 +1,50 @@
 <view class="wrap">
   <!-- 顶部：连接状态 + VIN 选择 -->
-  <view class="top-bar">
+  <view class="top-bar" style="height:100rpx; padding:0 20rpx; font-size:28rpx; display:flex; align-items:center; margin-top:30rpx;">
+
     <view class="status {{connected?'on':'off'}}">
-      <text class="dot">●</text>
+      <text class="dot {{connected?'green':'red'}}">●</text>
       <text>{{connected?'已连接':'未连接'}}</text>
     </view>
+
     <picker bindchange="onVinPick" value="{{vinIdx}}" range="{{vinList}}" mode="selector">
       <view class="vin-picker">{{vinList[vinIdx]}} ▼</view>
     </picker>
+
   </view>
+
+
   <button class="btn select" bindtap="onSelectVin">
-   选择 vin 码：{{vinList[vinIdx]}} ▼
-   </button>
-  <!-- 日志卡片 -->
-  <view class="log-card">
-    <view class="log-hd">
-      <text class="log-title">Live Log</text>
-      <text class="log-count">共 {{logCount}} 条</text>
-    </view>
-    <scroll-view scroll-y class="log-body">
-      <text class="log-txt">{{received}}</text>
+    选择 vin 码：{{vinList[vinIdx]}} ▼
+  </button>
+
+  <view style="margin: 10px 0; display: flex; align-items: center;">
+    <text style="margin-right: 8px; font-size: 14px; color: rgb(221, 207, 207);">订阅的车辆 VIN:</text>
+    <input class="sub_vin" placeholder="请输入或选择 VIN" value="{{sub_vin}}" bindinput="onSubVinInput" style="flex: 1; border: 1px solid #ddd; border-radius: 4px; padding: 6px 8px; font-size: 14px;" />
+  </view>
+
+  <!-- 日志 + 连接 同一容器 -->
+  <view class="log-connect-box" style="margin:10px 0;">
+
+    <!-- 日志区 -->
+    <scroll-view scroll-y style="height:800rpx; border:1px solid #eee;">
+      <block wx:for="{{logs}}" wx:key="index">
+        <view style="margin-bottom:4px;padding-bottom:4px;border-bottom:1px dashed #ccc;">
+          <text class="log-txt" style="font-size:25rpx;color:rgb(221, 207, 207);">{{item}}</text>
+        </view>
+      </block>
     </scroll-view>
+
+    <view style="display:flex; justify-content:space-between; margin:20rpx 40rpx;">
+      <button type="primary" size="mini" bindtap="doConnect">Connect</button>
+      <button type="warn" size="mini" bindtap="doDisconnect">Disconnect</button>
+    </view>
   </view>
 
   <!-- 输入区 -->
-  <view class="input-card">
+  <view class="pub-card" wx:if="{{showPub}}">
     <input class="input" value="{{pubTopic}}" bindinput="onPubTopic" placeholder="发布 Topic" />
     <textarea class="textarea" value="{{pubMsg}}" bindinput="onPubMsg" placeholder='{"msg":"hello"}' auto-height />
     <button class="btn send" bindtap="doPublish">Publish</button>
-    <button class="btn connect" bindtap="doConnect">{{connected?'断开':'Connect'}}</button>
   </view>
 </view>

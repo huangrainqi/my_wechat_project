@@ -6,6 +6,9 @@
   -webkit-overflow-scrolling:touch;
   box-sizing:border-box;
 }
+.dot.green { color: #32CD32; }   /* 连接绿 */
+.dot.red   { color: #FF0000; }   /* 断连红 */
+
 .btn.select {
   width: calc(100vw - 80rpx);
   margin: 0 auto 30rpx;
@@ -104,7 +107,7 @@
 }
 
 /* 输入卡片 */
-.input-card {
+.pub-card {
   background: #fff;
   border-radius: 24rpx;
   padding: 24rpx;

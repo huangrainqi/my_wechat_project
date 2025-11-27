@@ -1,2 +1,19 @@
 // app.js
-App({})
+App({
+  // 全局数据池
+  globalData: {
+    vinList: ['a', 'vim_test_07', 'LSADDA24X3Z000034','LSAECA2443S000021'],
+    clientId: 'vin_test_',
+    mqtt_username: 'xczn_car@2024',
+    mqtt_password: 'Innov@2024',
+  },
+
+  // 全局读写方法（可选，但推荐）
+  setGlobalData(key, val) {
+    this.globalData[key] = val;
+    // 如果页面需要实时刷新，可在页面侧手动 this.setData({ ...getApp().globalData })
+  },
+  getGlobalData(key) {
+    return key ? this.globalData[key] : this.globalData;
+  }
+});
