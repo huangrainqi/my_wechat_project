@@ -56,41 +56,43 @@ Page({
     }
     return longObj;
   },
-
-  onColumnChange(e) {
-    const col = e.detail.column
-    const idx = e.detail.value
-    if (col === 0) {          // 车型变了
-      this.setData({
-        carTypeIdx: idx,
-        aliasList: this._filterAlias(idx),
-        aliasIdx: 0           // 第二列滚回第一项
-      })
-    } else {                  // 别名这一列也记录
-      this.setData({ aliasIdx: idx })
-    }
-  },
-  onPickerConfirm(e) {
-    const [typeIdx, aliIdx] = e.detail.value
+ /* 修复后的 onColumnChange */
+ onColumnChange(e) {
+  const col = e.detail.column
+  const idx = e.detail.value
+  if (col === 0) {          // 车型变了
+    const filtered = this._filterAlias(idx)
     this.setData({
-      carTypeIdx: typeIdx,
-      aliasIdx: aliIdx
+      carTypeIdx: idx,
+      aliasList: filtered.aliasList,
+      aliasListShow: filtered.aliasListShow,
+      aliasIdx: 0           // 第二列滚回第一项
     })
-    this._confirmPick()
-  },
-  _confirmPick() {
-    const { carTypeIdx, aliasIdx, aliasList } = this.data
-    if (!aliasList.length) return          // 数组空直接返回
-    const fullKey = aliasList[aliasIdx] || aliasList[0]  // 越界时取第一项
-    const vin = getApp().globalData.vinMap[fullKey]
-    if (vin) {
-      this.setData({
-        selectShowText: `${fullKey}  (${vin})`,
-        sub_vin: vin,
-        subTopic: `node_msg_topic/${vin}`
-      })
-    }
-  },
+  } else {                  // 别名这一列也记录
+    this.setData({ aliasIdx: idx })
+  }
+},
+
+onPickerConfirm(e) {
+  const [typeIdx, aliIdx] = e.detail.value
+  this.setData({
+    carTypeIdx: typeIdx,
+    aliasIdx: aliIdx
+  })
+  this._confirmPick()
+},_confirmPick() {
+  const { aliasList, aliasIdx } = this.data
+  if (!aliasList || !aliasList.length) return   // 空数组直接 return
+  const fullKey = aliasList[aliasIdx] || aliasList[0]
+  const vin = getApp().globalData.vinMap[fullKey]
+  
+  // 更新选择按钮文字和VIN值
+  this.setData({
+    selectShowText: `${fullKey} (${vin})`,
+    sub_vin: vin,  // 确保这个值会同步到文本框
+    subTopic: `node_msg_topic/${vin}`
+  })
+},
   onUnload() {
     console.log('mqtt onUnload');
     // 真正退出才销毁
@@ -100,41 +102,40 @@ Page({
     }
   },
   onLoad() {
-    const app = getApp()                       // 第一次 getApp 放生命周期里
+    const app = getApp()
     const { carTypeList, vinMap } = app.globalData
   
-    // 生成第一组别名（同步）
-    const firstFullKeys = app.globalData.aliasList.filter(k => k.startsWith(carTypeList[0]))
-    const showList = firstFullKeys.map(k => {
-      const alias = k.replace(carTypeList[0] + '-', '')
-      return `${alias} (${vinMap[k]})`
-    })
+    // 使用修复后的 _filterAlias 方法获取初始数据
+    const filtered = this._filterAlias(0)
   
-    // 写入页面，**用回调**保证数据已就位
     this.setData({
       carTypeList,
-      aliasList: firstFullKeys,
-      aliasListShow: showList,
+      aliasList: filtered.aliasList,
+      aliasListShow: filtered.aliasListShow,
       vinMap
-    }, () => this._confirmPick())   // ← 回调里再算 VIN，绝不同步调
+    }, () => this._confirmPick())
   },
 
   /* 根据车型下标，过滤出对应的别名数组 */
   _filterAlias(carTypeIdx) {
-    const type = getApp().globalData.carTypeList[carTypeIdx]   // 例 'DR5'
-    const fullKeys = getApp().globalData.aliasList.filter(k => k.startsWith(type))
-    const map = getApp().globalData.vinMap
+    const app = getApp()
+    const type = app.globalData.carTypeList[carTypeIdx] // 例 'CR3'
+    const fullKeys = app.globalData.aliasList.filter(k => {
+      const [kType] = k.split('-') // 取出车型部分
+      return kType === type
+    })
   
-    // 右边列展示：去掉车型前缀，拼上 VIN
+    const map = app.globalData.vinMap
+  
     const showList = fullKeys.map(k => {
-      const alias = k.replace(type + '-', '')  // 把 DR5- 去掉
-      return `${alias} (${map[k]})`            // DR5-1 (LSADDA2N73Z000001)
+      const alias = k.replace(type + '-', '')
+      return `${alias} (${map[k]})`
     })
   
-    this.setData({
-      aliasList: fullKeys,      // 内部索引用（拿 VIN）
-      aliasListShow: showList   // 右侧列展示用
-    })
+    return {
+      aliasList: fullKeys,
+      aliasListShow: showList
+    }
   },
   /* 第一列：选车型 */
   bindCarTypeChange(e) {
@@ -206,15 +207,13 @@ Page({
       return;
     }
     const subTopic = `node_msg_topic/${sub_vin}`
+    console.log("订阅的vin码是:",subTopic)
     this.setData({ subTopic })   // 保证页面显示正确
-
     if (client && client.connected) return
-
     const that = this
-
-    const timeStr = Date.now().toString(36);          // 时间戳转 36 进制，较短
-    const randStr = Math.random().toString(36).slice(2, 6); // 4 位随机
-    const clientId_randan = app.globalData.clientId + `_${timeStr}_${randStr}`;
+    // const timeStr = Date.now().toString(36);          // 时间戳转 36 进制，较短
+    // const randStr = Math.random().toString(36).slice(2, 6); // 4 位随机
+    // const clientId_randan = app.globalData.clientId + `_${timeStr}_${randStr}`;
 
     client = mqtt.connect('wxs://monitor.xbrainnet.cn/mqtt', {
       clientId: app.globalData.clientId,
@@ -223,7 +222,7 @@ Page({
       reconnectPeriod: 5000,
       connectTimeout: 5000
     })
-    console.log("connect,self client_id:", clientId_randan)
+    console.log("connect,self client_id:", app.globalData.clientId)
     client.on('connect', () => {
       console.log('MQTT 已连接');
       this.setData({ connected: true }); // 连上
