@@ -11,10 +11,35 @@ var node_pb = NodeRoot.lookupType("brain_net_data_v3.brain_node_data");
 let client = null
 Page({
   data: {
-    subTopic: 'node_msg_topic/vehicle_08',
-    pubTopic: '/test',
-    pubMsg: 'hello',
-    received: ''
+    vinList: ['a','b','c'],
+    vinIdx: 0,
+    pubTopic: '',
+    pubMsg: '{"msg":"hello"}',
+    received: '',
+    connected: false,
+    logCount: 0
+  },
+  onSelectVin() {
+    wx.showActionSheet({
+      itemList: this.data.vinList,          // 数组即选项
+      success: (res) => {
+        const idx = res.tapIndex;
+        this.setData({
+          vinIdx: idx,
+          subTopic: `node_msg_topic/${this.data.vinList[idx]}`
+        });
+      }
+    });
+  },
+  onVinPick(e) {
+    const idx = e.detail.value;
+    this.setData({ vinIdx: idx, subTopic: `node_msg_topic/${this.data.vinList[idx]}` });
+  },
+  onVinPick(e) {
+    const idx = e.detail.value;               // 下标
+    const vin = this.data.vinList[idx];       // 选中的 vin
+    const topic = `node_msg_topic/${vin}`;    // 按业务规则拼 topic
+    this.setData({ vinIdx: idx, subTopic: topic });
   },
   convertLongToNumber(longObj) {
     if (longObj && typeof longObj === 'object' && 'low' in longObj) {

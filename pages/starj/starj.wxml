@@ -1,44 +1,33 @@
-<view class="page">
-  <!-- 顶部标题 -->
-  <view class="header">
-    <text class="title">MQTT 控制台</text>
-    <text class="sub">实时物联 · 即刻触达</text>
+<view class="wrap">
+  <!-- 顶部：连接状态 + VIN 选择 -->
+  <view class="top-bar">
+    <view class="status {{connected?'on':'off'}}">
+      <text class="dot">●</text>
+      <text>{{connected?'已连接':'未连接'}}</text>
+    </view>
+    <picker bindchange="onVinPick" value="{{vinIdx}}" range="{{vinList}}" mode="selector">
+      <view class="vin-picker">{{vinList[vinIdx]}} ▼</view>
+    </picker>
   </view>
-
-  <!-- 卡片 1：订阅 -->
-  <view class="card">
-    <text class="label">Subscribe Topic</text>
-    <input class="input" value="{{subTopic}}" bindinput="onSubTopic" placeholder="/demo" placeholder-style="color:#6c7a89" />
-  </view>
-
-
-  <!-- 连接按钮 -->
-  <button class="btn primary" bindtap="doConnect">
-    <text>{{client&&client.connected?'已连接':'Connect'}}</text>
-  </button>
-
-  <!-- 实时日志 -->
-  <view class="card log">
-    <text class="label">Live Log</text>
-    <scroll-view scroll-y class="scroll">
-      <text class="code">{{received}}</text>
+  <button class="btn select" bindtap="onSelectVin">
+   选择 vin 码：{{vinList[vinIdx]}} ▼
+   </button>
+  <!-- 日志卡片 -->
+  <view class="log-card">
+    <view class="log-hd">
+      <text class="log-title">Live Log</text>
+      <text class="log-count">共 {{logCount}} 条</text>
+    </view>
+    <scroll-view scroll-y class="log-body">
+      <text class="log-txt">{{received}}</text>
     </scroll-view>
   </view>
 
-  <!-- 卡片 2：发布 -->
-  <view class="card">
-    <text class="label">Publish Topic</text>
-    <input class="input" value="{{pubTopic}}" bindinput="onPubTopic" placeholder="/demo" placeholder-style="color:#6c7a89" />
+  <!-- 输入区 -->
+  <view class="input-card">
+    <input class="input" value="{{pubTopic}}" bindinput="onPubTopic" placeholder="发布 Topic" />
+    <textarea class="textarea" value="{{pubMsg}}" bindinput="onPubMsg" placeholder='{"msg":"hello"}' auto-height />
+    <button class="btn send" bindtap="doPublish">Publish</button>
+    <button class="btn connect" bindtap="doConnect">{{connected?'断开':'Connect'}}</button>
   </view>
-  <!-- 卡片 3：消息 -->
-  <view class="card">
-    <text class="label">Payload</text>
-    <textarea class="textarea" value="{{pubMsg}}" bindinput="onPubMsg" placeholder='{"msg":"hello"}' placeholder-style="color:#6c7a89" auto-height />
-  </view>
-
-  <!-- 发布按钮 -->
-  <button class="btn warn" bindtap="doPublish">
-    <text>Publish</text>
-  </button>
-
 </view>

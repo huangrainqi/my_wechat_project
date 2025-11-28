@@ -1,0 +1,50 @@
+<!--pages/login/login.wxml-->
+<view class="login-container">
+  <view class="login-header">
+    <view class="logo">
+      <text class="logo-icon">🔒</text>
+    </view>
+    <text class="app-name">Login</text>
+    <text class="welcome-text">欢迎登录</text>
+  </view>
+  
+  <form class="login-form" bindsubmit="formSubmit">
+    <view class="form-group">
+      <view class="input-container">
+        <text class="input-icon">👤</text>
+        <input 
+          class="form-input" 
+          name="username" 
+          placeholder="请输入用户名/手机号" 
+          value="{{username}}"
+          bindinput="onUsernameInput"
+        />
+      </view>
+      <text class="error-text" wx:if="{{usernameError}}">{{usernameError}}</text>
+    </view>
+    
+    <view class="form-group">
+      <view class="input-container">
+        <text class="input-icon">🔒</text>
+        <input 
+          class="form-input" 
+          name="password" 
+          password="{{!showPassword}}"
+          placeholder="请输入密码" 
+          value="{{password}}"
+          bindinput="onPasswordInput"
+        />
+        <text 
+          class="password-toggle" 
+          bindtap="togglePassword"
+        >{{showPassword ? '🙈' : '👁️'}}</text>
+      </view>
+      <text class="error-text" wx:if="{{passwordError}}">{{passwordError}}</text>
+    </view>
+    
+
+    <button class="login-btn" bindtap="doLogin">登录</button>
+
+
+  </form>
+</view>

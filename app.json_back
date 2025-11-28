@@ -3,35 +3,41 @@
 
   "pages": [
     "pages/starj/starj",
+    "pages/mqtt/mqtt",
     "pages/index/index",
     "pages/test_proto/test_proto",
     "pages/home/home"
   ],
   
+ 
   "tabBar": {
     "color": "#7A7E83",
     "selectedColor": "#3cc51f",
     "backgroundColor": "#ffffff",
     "list": [
-      
       {
         "pagePath": "pages/starj/starj",
         "text": "starj"
       },
       {
         "pagePath": "pages/test_proto/test_proto",
-        "text": "proto"
+        "text": "test_proto"
       },
       {
         "pagePath": "pages/index/index",
         "text": "坐标页"
       },
       {
+        "pagePath": "pages/mqtt/mqtt",
+        "text": "mqtt"
+      },
+      {
         "pagePath": "pages/home/home",
-        "text": "home"
+        "text": "home "
       }
     ]
   },
+
   "window": {
     "navigationBarTextStyle": "black",
     "navigationStyle": "custom"
