@@ -3,9 +3,7 @@
 
   "pages": [
     "pages/starj/starj",
-    "pages/index/index",
-    "pages/test_proto/test_proto",
-    "pages/home/home"
+    "pages/test_proto/test_proto"
   ],
   
   "tabBar": {
@@ -21,14 +19,6 @@
       {
         "pagePath": "pages/test_proto/test_proto",
         "text": "proto"
-      },
-      {
-        "pagePath": "pages/index/index",
-        "text": "坐标页"
-      },
-      {
-        "pagePath": "pages/home/home",
-        "text": "home"
       }
     ]
   },
