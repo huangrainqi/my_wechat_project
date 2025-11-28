@@ -10,10 +10,10 @@
   <!-- 2. 选择车辆（已搬出 top-bar） -->
   <view style="margin:10px 20rpx;">
     <picker mode="multiSelector"
-        range="{{[carTypeList,aliasList]}}"
-        value="{{[carTypeIdx,aliasIdx]}}"
-        bindcolumnchange="onColumnChange"  
-        bindchange="onPickerConfirm">     
+        range="{{[carTypeList, aliasListShow]}}"
+        value="{{[carTypeIdx, aliasIdx]}}"
+        bindcolumnchange="onColumnChange"
+        bindchange="onPickerConfirm">
   <button class="btn select">{{selectShowText}} ▼</button>
 </picker>
   </view>

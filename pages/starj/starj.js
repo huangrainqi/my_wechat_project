@@ -22,7 +22,7 @@ Page({
     log_max_cnt: 20,
     logCounter: 0,  // 全局序号
     showPub: false,   // 默认隐藏
-
+    aliasListShow: [],
      // 选择相关
      carTypeList: [],   // 车型
      aliasList: [],     // 当前车型下的别名
@@ -71,12 +71,12 @@ Page({
     }
   },
   onPickerConfirm(e) {
-    const [typeIdx, aliIdx] = e.detail.value   // 最终两列下标
+    const [typeIdx, aliIdx] = e.detail.value
     this.setData({
       carTypeIdx: typeIdx,
       aliasIdx: aliIdx
     })
-    this._confirmPick()        // 统一算 VIN
+    this._confirmPick()
   },
   _confirmPick() {
     const { carTypeIdx, aliasIdx, aliasList } = this.data
@@ -100,21 +100,42 @@ Page({
     }
   },
   onLoad() {
-    const { carTypeList, aliasList, vinMap } = getApp().globalData
+    const app = getApp()                       // 第一次 getApp 放生命周期里
+    const { carTypeList, vinMap } = app.globalData
+  
+    // 生成第一组别名（同步）
+    const firstFullKeys = app.globalData.aliasList.filter(k => k.startsWith(carTypeList[0]))
+    const showList = firstFullKeys.map(k => {
+      const alias = k.replace(carTypeList[0] + '-', '')
+      return `${alias} (${vinMap[k]})`
+    })
+  
+    // 写入页面，**用回调**保证数据已就位
     this.setData({
       carTypeList,
-      aliasList: this._filterAlias(0),
+      aliasList: firstFullKeys,
+      aliasListShow: showList,
       vinMap
-    })
-    this._confirmPick()   // 默认把第一辆车算出来
+    }, () => this._confirmPick())   // ← 回调里再算 VIN，绝不同步调
   },
 
   /* 根据车型下标，过滤出对应的别名数组 */
   _filterAlias(carTypeIdx) {
-    const type = getApp().globalData.carTypeList[carTypeIdx]
-    return getApp().globalData.aliasList.filter(k => k.startsWith(type))
+    const type = getApp().globalData.carTypeList[carTypeIdx]   // 例 'DR5'
+    const fullKeys = getApp().globalData.aliasList.filter(k => k.startsWith(type))
+    const map = getApp().globalData.vinMap
+  
+    // 右边列展示：去掉车型前缀，拼上 VIN
+    const showList = fullKeys.map(k => {
+      const alias = k.replace(type + '-', '')  // 把 DR5- 去掉
+      return `${alias} (${map[k]})`            // DR5-1 (LSADDA2N73Z000001)
+    })
+  
+    this.setData({
+      aliasList: fullKeys,      // 内部索引用（拿 VIN）
+      aliasListShow: showList   // 右侧列展示用
+    })
   },
-
   /* 第一列：选车型 */
   bindCarTypeChange(e) {
     const col = e.detail.column
@@ -137,13 +158,13 @@ Page({
 
   /* 统一把选中的「车型-别名」-> VIN */
   _confirmPick() {
-    const { carTypeIdx, aliasIdx, aliasList } = this.data
-    const fullKey = aliasList[aliasIdx]          // 例：DR5-DR5-3
-    if (!fullKey) return                         // 兜底
+    const { aliasList, aliasIdx } = this.data
+    if (!aliasList || !aliasList.length) return   // 空数组直接 return
+    const fullKey = aliasList[aliasIdx] || aliasList[0]
     const vin = getApp().globalData.vinMap[fullKey]
     this.setData({
-      selectShowText: `${fullKey}  (${vin})`,
-      sub_vin: vin,              // 一定要写，Connect 就认它
+      selectShowText: `${fullKey} (${vin})`,
+      sub_vin: vin,
       subTopic: `node_msg_topic/${vin}`
     })
   },
