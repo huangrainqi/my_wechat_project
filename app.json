@@ -3,7 +3,7 @@
 
   "pages": [
     "pages/starj/starj",
-    "pages/test_proto/test_proto"
+    "pages/demo/demo"
   ],
   
   "tabBar": {
@@ -11,14 +11,13 @@
     "selectedColor": "#3cc51f",
     "backgroundColor": "#ffffff",
     "list": [
-      
       {
         "pagePath": "pages/starj/starj",
         "text": "starj"
       },
       {
-        "pagePath": "pages/test_proto/test_proto",
-        "text": "proto"
+        "pagePath": "pages/demo/demo",
+        "text": "demo"
       }
     ]
   },

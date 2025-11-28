@@ -9,13 +9,9 @@
 
   <!-- 2. 选择车辆（已搬出 top-bar） -->
   <view style="margin:10px 20rpx;">
-    <picker mode="multiSelector"
-        range="{{[carTypeList, aliasListShow]}}"
-        value="{{[carTypeIdx, aliasIdx]}}"
-        bindcolumnchange="onColumnChange"
-        bindchange="onPickerConfirm">
-  <button class="btn select">{{selectShowText}} ▼</button>
-</picker>
+    <picker mode="multiSelector" range="{{[carTypeList, aliasListShow]}}" value="{{[carTypeIdx, aliasIdx]}}" bindcolumnchange="onColumnChange" bindchange="onPickerConfirm">
+      <button class="btn select">{{selectShowText}} ▼</button>
+    </picker>
   </view>
 
   <!-- 3. 订阅 VIN 输入（可选） -->
@@ -28,7 +24,7 @@
   <view class="log-connect-box" style="margin:10px 0;">
 
     <!-- 日志区 -->
-    <scroll-view scroll-y style="height:800rpx; border:1px solid #eee;">
+    <scroll-view scroll-y style="height: 920rpx; border: 1px solid #eee; display: block; box-sizing: border-box">
       <block wx:for="{{logs}}" wx:key="index">
         <view style="margin-bottom:4px;padding-bottom:4px;border-bottom:1px dashed #ccc;">
           <text class="log-txt" style="font-size:25rpx;color:rgb(221, 207, 207);">{{item}}</text>
