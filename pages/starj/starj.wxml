@@ -14,9 +14,14 @@
   </view>
 
 
+<!-- 直接让 picker 负责选择 -->
+<picker bindchange="onVinPick" value="{{vinIdx}}" range="{{vinList}}" mode="selector">
+  <button class="btn select">选择 vin 码：{{vinList[vinIdx]}} ▼</button>
+</picker>
+<!-- 
   <button class="btn select" bindtap="onSelectVin">
     选择 vin 码：{{vinList[vinIdx]}} ▼
-  </button>
+  </button> -->
 
   <view style="margin: 10px 0; display: flex; align-items: center;">
     <text style="margin-right: 8px; font-size: 14px; color: rgb(221, 207, 207);">订阅的车辆 VIN:</text>

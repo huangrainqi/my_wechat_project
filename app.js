@@ -2,8 +2,14 @@
 App({
   // 全局数据池
   globalData: {
-    vinList: ['a', 'vim_test_07', 'LSADDA24X3Z000034','LSAECA2443S000021'],
-    clientId: 'vin_test_',
+    vinList: ['test',
+      'LSADDA2443Z000014',
+      'LSADDA2423Z000125',
+      'LSADDA2413Z000016',
+      'LSADDA2493H000077',
+      'vin_test_07'
+    ],
+    clientId: 'vin_test_127',
     mqtt_username: 'xczn_car@2024',
     mqtt_password: 'Innov@2024',
   },

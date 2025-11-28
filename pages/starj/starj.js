@@ -31,40 +31,17 @@ Page({
       subTopic: vin ? `node_msg_topic/${vin}` : ''
     })
   },
-  /* 3. 底部 ActionSheet 选择 */
-  onSelectVin() {
-    wx.showActionSheet({
-      itemList: this.data.vinList,
-      success: (res) => {
-        const idx = res.tapIndex
-        const vin = this.data.vinList[idx]
-        this.setData({
-          vinIdx: idx,
-          sub_vin: vin,            // 同步到输入框
-          subTopic: `node_msg_topic/${vin}`
-        })
-      }
-    })
-  },
-  onVinPick(e) {
-    const idx = e.detail.value
-    const vin = this.data.vinList[idx]
-    this.setData({
-      vinIdx: idx,
-      sub_vin: vin,              // 同步到输入框
-      subTopic: `node_msg_topic/${vin}`
-    })
-  },
-  onVinPick(e) {
-    const idx = e.detail.value;
-    this.setData({ vinIdx: idx, subTopic: `node_msg_topic/${this.data.vinList[idx]}` });
-  },
   onVinPick(e) {
     const idx = e.detail.value;               // 下标
     const vin = this.data.vinList[idx];       // 选中的 vin
-    const topic = `node_msg_topic/${vin}`;    // 按业务规则拼 topic
-    this.setData({ vinIdx: idx, subTopic: topic });
+    const topic = `node_msg_topic/${vin}`;    // 订阅 topic
+    this.setData({
+      vinIdx: idx,
+      sub_vin: vin,      // 同步到输入框
+      subTopic: topic    // 订阅用
+    });
   },
+  
   convertLongToNumber(longObj) {
     if (longObj && typeof longObj === 'object' && 'low' in longObj) {
       return longObj.low + (longObj.high * 0x100000000);
@@ -108,16 +85,18 @@ Page({
   doConnect() {
     const { connected } = this.data;
     if (connected == true) {
-      showToast("当前 已连接，如需要连接其它vin，请先断开连接")
+    console.log("当前已连接，如需要连接其它vin，请先断开连接")
+
+      wx.showToast({ title: '当前已连接，如需要连接其它vin，请先断开连接', icon: 'none' })
       return
     }
     console.log('btn -> doconnect');
 
-    // wx.showToast({ title: 'btn', icon: 'none' });
-    const { sub_vin } = this.data
-    if (!sub_vin) {
-      wx.showToast({ title: '请先输入或选择 VIN', icon: 'none' })
-      return
+    const { sub_vin } = this.data;
+    const trimmedVin = sub_vin ? sub_vin.trim() : '';
+    if (!trimmedVin) {
+      wx.showToast({ title: '请先输入或选择 VIN 码 ', icon: 'none' });
+      return;
     }
     const subTopic = `node_msg_topic/${sub_vin}`
     this.setData({ subTopic })   // 保证页面显示正确
@@ -131,7 +110,7 @@ Page({
     const clientId_randan = app.globalData.clientId + `_${timeStr}_${randStr}`;
 
     client = mqtt.connect('wxs://monitor.xbrainnet.cn/mqtt', {
-      clientId: clientId_randan,
+      clientId: app.globalData.clientId,
       username: app.globalData.mqtt_username,
       password: app.globalData.mqtt_password,
       reconnectPeriod: 5000,
@@ -152,8 +131,79 @@ Page({
       const u8 = new Uint8Array(payload);
       var deMessage = node_pb.decode(u8);
       // console.log("接收到的protomsg :", this.convertLongToNumber(deMessage.basetime) , " , buffer 长度: ", u8.length);
-      const logStr = ` basetime=${this.convertLongToNumber(deMessage.basetime)}  length=${u8.length}`;
-      that.log(logStr);
+      var bmsSoc = deMessage.chasisData.chassisDiagnosis.bmsSoc ; 
+      var taskId = deMessage.taskStatus.taskId ; 
+      var VehicleStatus = deMessage.taskStatus.VehicleStatus ;   // 0.空闲 3. 达到目地的(规控单路线终点)
+      var taskStatus = deMessage.taskStatus.taskStatus ; // (0.空闲 1.运送中 2.达到途经点 3.完成任务)
+      var isTrapped = deMessage.taskStatus.isTrapped ; 
+      var taskMode = deMessage.taskStatus.taskMode ; 
+
+      var vehConntrolIsStop = deMessage.taskStatus.vehConntrolStopStatus.vehConntrolIsStop ; 
+      var isStopByHotkeyStatus = deMessage.taskStatus.vehConntrolStopStatus.isStopByHotkeyStatus ; 
+      var schedulingStatus = deMessage.taskStatus.vehConntrolStopStatus.schedulingStatus ; 
+
+      var longitude = deMessage.carInfo.brainGps.longitude ; 
+      var latitude = deMessage.carInfo.brainGps.latitude ; 
+      var gpsStatus = deMessage.carInfo.brainGps.gpsStatus ; // gps 初始化 0 为失败, 1为成功
+      var positionCovarianceType = deMessage.carInfo.brainGps.positionCovarianceType ;  //浮点解 等于3正常
+      // var horn = deMessage.taskStatus.vehStateInTask.horn ; 
+      // var clean = deMessage.taskStatus.vehStateInTask.clean ; 
+
+      var rdmodulecom_1State = deMessage.taskStatus.smSignal.rdmodulecom_1State ; 
+// 任务完成状态：
+// 0: 空闲 1: 任务完成 2: 任务中
+    var rdmodulecom_2State = deMessage.taskStatus.smSignal.rdmodulecom_2State ; 
+    // 值   状态名称                             说明
+    // 0    NORMAL                             正常状态
+    // 1    LOCATION_NOT_READY                 定位未就绪
+    // 2    MAP_NOT_READY                      地图未就绪
+    // 3    REFERENCE_LINE_NOT_READY           参考线未就绪
+    // 4    PARKING_SLOT_OCCUPIED              停车位被占用
+    // 5    EMERGENCY_STOP                     紧急停车
+    // 6    COLLISION_BOUNDARY                 碰撞边界
+    // 7    FAR_AWAY_FROM_REFERENCE_LINE       远离参考线
+    // 8    DESTINATION_OCCUPIED               目标点被占用
+    // 9    ROAD_OCCUPIED                      道路被占用
+    // 10   MAP_NOT_MATCHED                    地图不匹配
+    // 11   FAR_AWAY_FROM_TARGET_POINT         远离目标点
+    // 12   TRAPPED                            车辆被困
+      var rdmodulecom_3State = deMessage.taskStatus.smSignal.rdmodulecom_3State ;
+// # 清扫状态： 
+// # 0: 不清扫 1: 清扫
+      var rdmodulecom_4State = deMessage.taskStatus.smSignal.rdmodulecom_4State ;
+// 当前任务类型：
+// 值   状态名称                             说明
+// -1   DEFAULT                            默认值
+// 0    PATH                               沿路径行驶
+// 1    EDGE_SWEEPING                      贴边清扫
+// 2    COVERAGE_SWEEPING                  覆盖清扫
+// 3    ORIENTED_POI                       有向POI泊入
+// 4    PARKING                            泊车
+// 5    ADJUST_ORIENTATION                 调整朝向
+// 6    PATH_SWEEPING                      路径清扫
+
+const logs_temp = [
+  `bmsSoc = ${bmsSoc}`,
+  `taskId = ${taskId}`,
+  `VehicleStatus = ${VehicleStatus}  （0.空闲 3. 达到目地的(规控单路线终点) `,
+  `taskStatus = ${taskStatus}   (0.空闲 1.运送中 2.达到途经点 3.完成任务)` ,
+  `isTrapped = ${isTrapped}`,
+  `taskMode = ${taskMode}`,
+  `vehConntrolIsStop = ${vehConntrolIsStop}`,
+  `isStopByHotkeyStatus = ${isStopByHotkeyStatus}`,
+  `schedulingStatus = ${schedulingStatus}`,
+  `longitude = ${longitude}`,
+  `latitude = ${latitude}`,
+  `gpsStatus = ${gpsStatus}  （gps 初始化 0 为失败, 1为成功） `,
+  `positionCovarianceType = ${positionCovarianceType} （浮点解 等于3正常）`,
+  `rdmodulecom_1State = ${rdmodulecom_1State}`,
+  `rdmodulecom_2State = ${rdmodulecom_2State}`,
+  `rdmodulecom_3State = ${rdmodulecom_3State}`,
+  `rdmodulecom_4State = ${rdmodulecom_4State}`
+];
+    const log_str = '\n'+ logs_temp.join('\n');
+      // const logStr = ` basetime=${this.convertLongToNumber(deMessage.basetime)}  length=${u8.length}`;
+      that.log(log_str);
     })
 
     client.on('error', err => {
