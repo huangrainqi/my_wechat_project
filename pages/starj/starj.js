@@ -12,7 +12,7 @@ let client = null
 const app = getApp();
 Page({
   data: {
-    vinList: app.globalData.vinList,
+    // vinList: app.globalData.vinList,
     vinIdx: 0,
     pubTopic: '',
     pubMsg: '{"msg":"hello"}',
@@ -21,7 +21,15 @@ Page({
     logs: [],      // 最多 10 条
     log_max_cnt: 20,
     logCounter: 0,  // 全局序号
-    showPub: false   // 默认隐藏
+    showPub: false,   // 默认隐藏
+
+     // 选择相关
+     carTypeList: [],   // 车型
+     aliasList: [],     // 当前车型下的别名
+     carTypeIdx: 0,     // 车型下标
+     aliasIdx: 0,       // 别名下标
+     selectShowText: '请选择车辆',  // 按钮文字
+     sub_vin: ''        // 真正要用的 VIN
   },
   /* 1. 手输 VIN */
   onSubVinInput(e) {
@@ -33,7 +41,7 @@ Page({
   },
   onVinPick(e) {
     const idx = e.detail.value;               // 下标
-    const vin = this.data.vinList[idx];       // 选中的 vin
+    // const vin = this.data.vinList[idx];       // 选中的 vin
     const topic = `node_msg_topic/${vin}`;    // 订阅 topic
     this.setData({
       vinIdx: idx,
@@ -48,6 +56,41 @@ Page({
     }
     return longObj;
   },
+
+  onColumnChange(e) {
+    const col = e.detail.column
+    const idx = e.detail.value
+    if (col === 0) {          // 车型变了
+      this.setData({
+        carTypeIdx: idx,
+        aliasList: this._filterAlias(idx),
+        aliasIdx: 0           // 第二列滚回第一项
+      })
+    } else {                  // 别名这一列也记录
+      this.setData({ aliasIdx: idx })
+    }
+  },
+  onPickerConfirm(e) {
+    const [typeIdx, aliIdx] = e.detail.value   // 最终两列下标
+    this.setData({
+      carTypeIdx: typeIdx,
+      aliasIdx: aliIdx
+    })
+    this._confirmPick()        // 统一算 VIN
+  },
+  _confirmPick() {
+    const { carTypeIdx, aliasIdx, aliasList } = this.data
+    if (!aliasList.length) return          // 数组空直接返回
+    const fullKey = aliasList[aliasIdx] || aliasList[0]  // 越界时取第一项
+    const vin = getApp().globalData.vinMap[fullKey]
+    if (vin) {
+      this.setData({
+        selectShowText: `${fullKey}  (${vin})`,
+        sub_vin: vin,
+        subTopic: `node_msg_topic/${vin}`
+      })
+    }
+  },
   onUnload() {
     console.log('mqtt onUnload');
     // 真正退出才销毁
@@ -57,9 +100,52 @@ Page({
     }
   },
   onLoad() {
-    console.log(' mqtt onLoad');
-    // 页面第一次创建时连接
-    // if (!client) this.doConnect()
+    const { carTypeList, aliasList, vinMap } = getApp().globalData
+    this.setData({
+      carTypeList,
+      aliasList: this._filterAlias(0),
+      vinMap
+    })
+    this._confirmPick()   // 默认把第一辆车算出来
+  },
+
+  /* 根据车型下标，过滤出对应的别名数组 */
+  _filterAlias(carTypeIdx) {
+    const type = getApp().globalData.carTypeList[carTypeIdx]
+    return getApp().globalData.aliasList.filter(k => k.startsWith(type))
+  },
+
+  /* 第一列：选车型 */
+  bindCarTypeChange(e) {
+    const col = e.detail.column
+    const idx = e.detail.value
+    if (col === 0) {          // 第一列变了才处理
+      this.setData({
+        carTypeIdx: idx,
+        aliasList: this._filterAlias(idx),
+        aliasIdx: 0            // 关键：第二列滚回 0
+      })
+      this._confirmPick()     // 立即把 VIN 算出来
+    }
+  },
+
+  /* 第二列：选别名 */
+  bindAliasChange(e) {
+    this.setData({ aliasIdx: +e.detail.value })
+    this._confirmPick()
+  },
+
+  /* 统一把选中的「车型-别名」-> VIN */
+  _confirmPick() {
+    const { carTypeIdx, aliasIdx, aliasList } = this.data
+    const fullKey = aliasList[aliasIdx]          // 例：DR5-DR5-3
+    if (!fullKey) return                         // 兜底
+    const vin = getApp().globalData.vinMap[fullKey]
+    this.setData({
+      selectShowText: `${fullKey}  (${vin})`,
+      sub_vin: vin,              // 一定要写，Connect 就认它
+      subTopic: `node_msg_topic/${vin}`
+    })
   },
   onSubTopic(e) {
     this.setData({ subTopic: e.detail.value.replace(/[^a-zA-Z0-9/_]/g, '') })

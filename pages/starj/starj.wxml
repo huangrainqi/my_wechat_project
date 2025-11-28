@@ -1,31 +1,27 @@
 <view class="wrap">
-  <!-- 顶部：连接状态 + VIN 选择 -->
-  <view class="top-bar" style="height:100rpx; padding:0 20rpx; font-size:28rpx; display:flex; align-items:center; margin-top:30rpx;">
-
+  <!-- 1. 顶部：仅保留连接状态 -->
+  <view class="top-bar" style="height:100rpx;padding:0 20rpx;font-size:28rpx;display:flex;align-items:center;margin-top:30rpx;">
     <view class="status {{connected?'on':'off'}}">
       <text class="dot {{connected?'green':'red'}}">●</text>
       <text>{{connected?'已连接':'未连接'}}</text>
     </view>
-
-    <picker bindchange="onVinPick" value="{{vinIdx}}" range="{{vinList}}" mode="selector">
-      <view class="vin-picker">{{vinList[vinIdx]}} ▼</view>
-    </picker>
-
   </view>
 
-
-<!-- 直接让 picker 负责选择 -->
-<picker bindchange="onVinPick" value="{{vinIdx}}" range="{{vinList}}" mode="selector">
-  <button class="btn select">选择 vin 码：{{vinList[vinIdx]}} ▼</button>
+  <!-- 2. 选择车辆（已搬出 top-bar） -->
+  <view style="margin:10px 20rpx;">
+    <picker mode="multiSelector"
+        range="{{[carTypeList,aliasList]}}"
+        value="{{[carTypeIdx,aliasIdx]}}"
+        bindcolumnchange="onColumnChange"  
+        bindchange="onPickerConfirm">     
+  <button class="btn select">{{selectShowText}} ▼</button>
 </picker>
-<!-- 
-  <button class="btn select" bindtap="onSelectVin">
-    选择 vin 码：{{vinList[vinIdx]}} ▼
-  </button> -->
+  </view>
 
-  <view style="margin: 10px 0; display: flex; align-items: center;">
-    <text style="margin-right: 8px; font-size: 14px; color: rgb(221, 207, 207);">订阅的车辆 VIN:</text>
-    <input class="sub_vin" placeholder="请输入或选择 VIN" value="{{sub_vin}}" bindinput="onSubVinInput" style="flex: 1; border: 1px solid #ddd; border-radius: 4px; padding: 6px 8px; font-size: 14px;" />
+  <!-- 3. 订阅 VIN 输入（可选） -->
+  <view style="margin:10px 20rpx;display:flex;align-items:center;">
+    <text style="margin-right:8px;font-size:14px;color:#999;">订阅的车辆VIN：</text>
+    <input style="flex:1;border:1px solid #ddd;border-radius:4px;padding:6px 8px;font-size:14px;" placeholder="请输入或选择VIN" value="{{sub_vin}}" bindinput="onSubVinInput" />
   </view>
 
   <!-- 日志 + 连接 同一容器 -->
