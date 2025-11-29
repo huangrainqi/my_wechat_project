@@ -31,6 +31,13 @@ Page({
      selectShowText: '请选择车辆',  // 按钮文字
      sub_vin: ''        // 真正要用的 VIN
   },
+  onShow() {
+    console.log('starj页面show');
+  },
+  onHide() {
+    console.log('starj页面hide');
+   this.doDisconnect()
+  },
   /* 1. 手输 VIN */
   onSubVinInput(e) {
     const vin = e.detail.value.trim()
@@ -183,7 +190,7 @@ onPickerConfirm(e) {
     if (client && client.end) client.end();
   },
   doDisconnect() {
-    if (client && client.end) {
+    if (client) {
       client.end(true);   // true = 强制关闭
       client = null;
       this.setData({ connected: false });
