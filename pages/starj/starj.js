@@ -11,6 +11,22 @@ var node_pb = NodeRoot.lookupType("brain_net_data_v3.brain_node_data");
 let client = null
 const app = getApp();
 Page({
+   // ① 分享给好友 / 群聊
+   onShareAppMessage() {
+    return {
+      title: '自定义标题',
+      path: '/pages/index/index',
+      imageUrl: '/static/share.jpg' // 可选
+    }
+  },
+
+  // ② 分享到朋友圈（需基础库 ≥ 2.11.3）
+  onShareTimeline() {
+    return {
+      title: '朋友圈标题',
+      query: 'from=timeline'
+    }
+  },
   data: {
     // vinList: app.globalData.vinList,
     vinIdx: 0,

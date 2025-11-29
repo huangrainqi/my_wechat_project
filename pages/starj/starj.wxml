@@ -33,7 +33,7 @@
     </scroll-view>
 
     <view style="display:flex; justify-content:space-between; margin:20rpx 40rpx;">
-      <button type="primary" size="mini" bindtap="doConnect">Connect</button>
+      <button type="primary" size="mini" bindtap="doConnect" >Connect</button>
       <button type="warn" size="mini" bindtap="doDisconnect">Disconnect</button>
     </view>
   </view>

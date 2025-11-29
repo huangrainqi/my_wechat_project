@@ -74,7 +74,8 @@ Page({
 
   doLogin() {
     console.log("~~~~~~~~")
-    if (username === '12') {
+    const { username, password } = this.data;
+    if (username === '789') {
       wx.showToast({title: '登录成功', icon: 'success'});
       // ★★★ 跳 tabBar 页必须用 switchTab ★★★
       wx.switchTab({url: '/pages/starj/starj'});
