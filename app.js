@@ -4,16 +4,25 @@ const vinDict = require('./data/vin.js')
 App({
   // 全局数据池
   globalData: {
-   
     clientId: 'vin_test_127',
-    mqtt_username: 'xczn_car@2024',
+   mqtt_username: 'xczn_car@2024',
     mqtt_password: 'Innov@2024',
-
     carTypeList: [],   // 车型列表
     aliasList: [],     // 所有「车型-别名」
     vinMap: {}         // 「车型-别名」-> 真实 VIN
   },
+  getDeviceId() {
+    let id = wx.getStorageSync('mqtt_client_id');
+    if (!id) {
+      id = 'dev_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
+      wx.setStorageSync('mqtt_client_id', id);
+    }
+    return id;
+  },
+
   onLaunch() {
+    this.globalData.clientId = this.getDeviceId()
+    console.log("clientid:",this.globalData.clientId)
     this._buildVinPickData()
   },
 

@@ -1,12 +1,13 @@
 {
   "window": {
-    "enableShareAppMessage": true,
-    "enableShareTimeline": true
+    "navigationBarTextStyle": "black",
+    "navigationStyle": "custom"
   },
   "pages": [
     "pages/login/login",
     "pages/starj/starj",
-    "pages/demo/demo"
+    "pages/demo/demo",
+    "pages/test/test"
   ],
   "tabBar": {
     "color": "#7A7E83",
@@ -18,14 +19,10 @@
         "text": "starj"
       },
       {
-        "pagePath": "pages/demo/demo",
-        "text": "demo"
+        "pagePath": "pages/test/test",
+        "text": "test"
       }
     ]
-  },
-  "window": {
-    "navigationBarTextStyle": "black",
-    "navigationStyle": "custom"
   },
   "style": "v2",
   "renderer": "skyline",

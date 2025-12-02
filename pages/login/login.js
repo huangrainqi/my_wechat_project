@@ -1,5 +1,12 @@
 // pages/login/login.js
 Page({
+  onShareAppMessage() {
+    return {
+      title: 'login_starj',
+      path: '/pages/login/login',
+      imageUrl: '/static/share.jpg' // 可选
+    }
+  },
   data: {
     username: '',
     password: '',
@@ -7,9 +14,17 @@ Page({
     usernameError: '',
     passwordError: '',
     isFormValid: false,
-    isLoading: false
+    isLoading: false ,
+    is_show: false 
   },
-
+  onLoad() {
+    // 约定：登录成功后把 token 或任意标记写到本地
+    const hasLogin = wx.getStorageSync('hasLogin');
+    if (hasLogin) {
+      // 已经登录过，直接跳走
+      wx.switchTab({ url: '/pages/starj/starj' });
+    }
+  },
   onUsernameInput(e) {
     const username = e.detail.value;
     this.setData({ username });
@@ -68,18 +83,23 @@ Page({
       });
       return;
     }
-
     this.doLogin();
   },
 
   doLogin() {
-    console.log("~~~~~~~~")
     const { username, password } = this.data;
-    if (username === '789') {
+    if (username === 'test' ) {
       wx.showToast({title: '登录成功', icon: 'success'});
+      wx.reLaunch({ url: '/pages/demo/demo' });
+      
+    } else if ( username == 'starj'){
+      wx.showToast({title: '登录成功', icon: 'success'});
+      wx.setStorageSync('hasLogin', true);
       // ★★★ 跳 tabBar 页必须用 switchTab ★★★
       wx.switchTab({url: '/pages/starj/starj'});
-    } else {
+
+    }
+    else {
       wx.showToast({title: '账号或密码错误', icon: 'error'});
     }
   }

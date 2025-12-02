@@ -7,7 +7,13 @@ const Layer = require("../../simplemap/layers/Layer")
 const Widget = require("../../simplemap/widgets/Widget")
 
 Page({
-
+  onShareAppMessage() {
+    return {
+      title: 'demo',
+      path: '/pages/demo/demo',
+      imageUrl: '/static/share.jpg' // 可选
+    }
+  },
 	marks: {},
 
 	/**

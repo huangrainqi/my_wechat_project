@@ -15,7 +15,7 @@
         <input 
           class="form-input" 
           name="username" 
-          placeholder="请输入用户名/手机号" 
+          placeholder="请输入登录号" 
           value="{{username}}"
           bindinput="onUsernameInput"
         />
@@ -23,7 +23,7 @@
       <text class="error-text" wx:if="{{usernameError}}">{{usernameError}}</text>
     </view>
     
-    <view class="form-group">
+    <view class="form-group"  wx:if="{{is_show}}">
       <view class="input-container">
         <text class="input-icon">🔒</text>
         <input 

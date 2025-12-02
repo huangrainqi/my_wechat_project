@@ -1,0 +1,6 @@
+<!--pages/test/test.wxml-->
+<view class="box">
+  <text>clear</text>
+
+  <button bindtap="clearLogin">清空登录态</button>
+</view>

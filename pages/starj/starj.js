@@ -14,8 +14,8 @@ Page({
    // ① 分享给好友 / 群聊
    onShareAppMessage() {
     return {
-      title: '自定义标题',
-      path: '/pages/index/index',
+      title: 'starj',
+      path: '/pages/starj/starj',
       imageUrl: '/static/share.jpg' // 可选
     }
   },
@@ -247,7 +247,10 @@ onPickerConfirm(e) {
     })
     console.log("connect,self client_id:", app.globalData.clientId)
     client.on('connect', () => {
-      console.log('MQTT 已连接');
+      console.log('MQTT 已连接()');
+      var temp_log = "self client id:\n" + app.globalData.clientId
+      that.log(temp_log);
+
       this.setData({ connected: true }); // 连上
       wx.showToast({ title: 'MQTT 已连接', icon: 'success' })
       client.subscribe(subTopic, err => {
