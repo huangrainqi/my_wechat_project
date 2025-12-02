@@ -272,7 +272,7 @@ onPickerConfirm(e) {
 
       var vehConntrolIsStop = deMessage.taskStatus.vehConntrolStopStatus.vehConntrolIsStop ; 
       var isStopByHotkeyStatus = deMessage.taskStatus.vehConntrolStopStatus.isStopByHotkeyStatus ; 
-      var schedulingStatus = deMessage.taskStatus.vehConntrolStopStatus.schedulingStatus ; 
+      var isStopBySchedulingStatus = deMessage.taskStatus.vehConntrolStopStatus.schedulingStatus.isStopBySchedulingStatus ; 
 
       var longitude = deMessage.carInfo.brainGps.longitude ; 
       var latitude = deMessage.carInfo.brainGps.latitude ; 
@@ -314,16 +314,28 @@ onPickerConfirm(e) {
 // 5    ADJUST_ORIENTATION                 调整朝向
 // 6    PATH_SWEEPING                      路径清扫
 
+ /// system_status
+  var sauStatus  = deMessage.systemStatus.sauStatus;
+  var initingStatus  = deMessage.systemStatus.initingStatus;
+  var totalCpuUsage  = deMessage.systemStatus.totalCpuUsage.rtUsage;
+  var memInfo  = deMessage.systemStatus.memInfo.usedMemPct;
+  var temperature  = deMessage.systemStatus.temperature;
+  
 const logs_temp = [
   `bmsSoc = ${bmsSoc}`,
+  `sauStatus = ${sauStatus}  [0. idle 1.initing 2.error 3.ready (硬件，软件节点，定位)]`,
+  `initingStatus = ${initingStatus}`,
+  `totalCpuUsage = ${totalCpuUsage}`,
+  `memInfo = ${memInfo}`,
+  `temperature = ${temperature}`,
   `taskId = ${taskId}`,
-  `VehicleStatus = ${VehicleStatus}  （0.空闲 3. 达到目地的(规控单路线终点) `,
-  `taskStatus = ${taskStatus}   (0.空闲 1.运送中 2.达到途经点 3.完成任务)` ,
+  `VehicleStatus = ${VehicleStatus}  [0.空闲 3. 达到目地的(规控单路线终点)] `,
+  `taskStatus = ${taskStatus}   [0.空闲 1.运送中 2.达到途经点 3.完成任务]` ,
   `isTrapped = ${isTrapped}`,
   `taskMode = ${taskMode}`,
   `vehConntrolIsStop = ${vehConntrolIsStop}`,
   `isStopByHotkeyStatus = ${isStopByHotkeyStatus}`,
-  `schedulingStatus = ${schedulingStatus}`,
+  `isStopBySchedulingStatus = ${isStopBySchedulingStatus}`,
   `longitude = ${longitude}`,
   `latitude = ${latitude}`,
   `gpsStatus = ${gpsStatus}  （gps 初始化 0 为失败, 1为成功） `,
@@ -333,6 +345,16 @@ const logs_temp = [
   `rdmodulecom_3State = ${rdmodulecom_3State}`,
   `rdmodulecom_4State = ${rdmodulecom_4State}`
 ];
+
+logs_temp.push(`non_exist_nodes = [${(deMessage.systemStatus.nonExistNodes || []).join(', ')}]`);
+
+  // 2. firmware 诊断
+  (deMessage.systemStatus.firmwareDiagnosis?.firmwareDiagnosisInfo || []).forEach(d => {
+    logs_temp.push(
+      `firmware_name = ${d.firmwareName || '""'}, state = [${(d.state || []).join(', ')}], msg = [${(d.msg || []).join(', ')}]`
+    );
+  });
+
     const log_str = '\n'+ logs_temp.join('\n');
       // const logStr = ` basetime=${this.convertLongToNumber(deMessage.basetime)}  length=${u8.length}`;
       that.log(log_str);
