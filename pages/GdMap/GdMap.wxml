@@ -1,0 +1,14 @@
+<!--pages/GdMap/GdMap.wxml-->
+<text>pages/GdMap/GdMap.wxml</text>
+
+
+<map id="gaodeMap"
+     longitude="{{lng}}"
+     latitude="{{lat}}"
+     scale="18"
+     show-location
+     markers="{{markers}}"
+     style="width:100%;height:70vh">
+</map>
+<button bindtap="getPOI">获取周边500m加油站</button>
+<text>{{address}}</text>

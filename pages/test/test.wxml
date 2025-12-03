@@ -4,3 +4,4 @@
 
   <button bindtap="clearLogin">清空登录态</button>
 </view>
+

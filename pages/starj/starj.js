@@ -340,9 +340,9 @@ const logs_temp = [
   `latitude = ${latitude}`,
   `gpsStatus = ${gpsStatus}  （gps 初始化 0 为失败, 1为成功） `,
   `positionCovarianceType = ${positionCovarianceType} （浮点解 等于3正常）`,
-  `rdmodulecom_1State = ${rdmodulecom_1State}`,
-  `rdmodulecom_2State = ${rdmodulecom_2State}`,
-  `rdmodulecom_3State = ${rdmodulecom_3State}`,
+  `rdmodulecom_1State = ${rdmodulecom_1State} [0: 空闲 1: 任务完成 2: 任务中]`,
+  `rdmodulecom_2State = ${rdmodulecom_2State} [异常状态]`,
+  `rdmodulecom_3State = ${rdmodulecom_3State}  [0: 不清扫 1: 清扫]`,
   `rdmodulecom_4State = ${rdmodulecom_4State}`
 ];
 
