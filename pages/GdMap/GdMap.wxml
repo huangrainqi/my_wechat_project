@@ -8,7 +8,9 @@
      scale="18"
      show-location
      markers="{{markers}}"
+     bindregionchange="onRegionChange"
+      bindtap="onMapTap"    
      style="width:100%;height:70vh">
 </map>
-<button bindtap="getPOI">获取周边500m加油站</button>
-<text>{{address}}</text>
+<!-- <button bindtap="getPOI">获取周边500m加油站</button> -->
+<!-- <text>{{address}}</text> -->
