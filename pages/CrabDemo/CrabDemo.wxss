@@ -1,0 +1,87 @@
+/* 变量区：一改全改 */
+page{
+  --bg:#0f1117;
+  --cardBg:rgba(28,32,40,.65);
+  --primary:#00f5d4;
+  --warn:#ff007f;
+  --radius:24rpx;
+  --blur:20rpx;
+  --mono:"SF Mono",Consolas,monospace;
+  background: var(--bg);
+  color:#e4e6eb;
+  box-sizing:border-box;   /* 加这一行即可 */
+  padding:40rpx;
+  font-family: -apple-system-font,Helvetica Neue,Arial;
+}
+
+
+
+.dot.green { color: #32CD32; }   /* 连接绿 */
+.dot.red   { color: #FF0000; }   /* 断连红 */
+
+/* 顶部 */
+.header{
+  margin-top: 60rpx;   /* 原来可能是 60~80rpx，按需再调小 */
+  padding-top: 0;
+}
+
+.title{font-size:48rpx;font-weight:600;letter-spacing:2rpx;}
+.sub{font-size:26rpx;color:#8a93a0;margin-top:8rpx;}
+
+/* 通用卡片 */
+.card{
+  background:var(--cardBg);
+  border-radius:var(--radius);
+  padding:32rpx;
+  margin-bottom:40rpx;
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border:1rpx solid rgba(255,255,255,.08);
+  box-shadow:0 8rpx 32rpx rgba(0,0,0,.36);
+}
+.label{font-size:28rpx;color:#c1c6d0;margin-bottom:16rpx;display:block;}
+
+/* 输入 */
+.input,.textarea{
+  width:100%;
+  background:rgba(0,0,0,.25);
+  border-radius:12rpx;
+  padding:20rpx 24rpx;
+  color:#fff;
+  font-size:30rpx;
+  border:1rpx solid rgba(255,255,255,.1);
+}
+.textarea{min-height:100rpx;}
+
+/* 按钮 */
+.btn{
+  width:100%;
+  height:96rpx;
+  border-radius:var(--radius);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32rpx;
+  font-weight:500;
+  letter-spacing:2rpx;
+  border:none;
+  margin-bottom:40rpx;
+  transition:all .25s ease;
+}
+.btn.primary{background:linear-gradient(135deg,var(--primary) 0%,#00b3a1 100%);color:#000;}
+.btn.warn{background:linear-gradient(135deg,var(--warn) 0%,#d6006c 100%);color:#fff;}
+.btn:active{transform:scale(.96);opacity:.9;}
+
+.btn-row{
+  display: flex;
+  justify-content: space-between;
+  margin: 20rpx 0;
+}
+.btn-row .btn{
+  width: 48%;          /* 左右各一半，留点间距 */
+}
+
+/* 日志 */
+.log{padding:0;}
+.scroll{height:150rpx;padding:24rpx;box-sizing:border-box;}
+.code{font-family:var(--mono);font-size:26rpx;line-height:40rpx;white-space:pre-wrap;color:#a9b4c2;}

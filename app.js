@@ -5,7 +5,7 @@ App({
   // 全局数据池
   globalData: {
     clientId: 'vin_test_127',
-     mqtt_username: 'xczn_car@2024',
+    mqtt_username: 'xczn_car@2024',
     mqtt_password: 'Innov@2024',
     carTypeList: [],   // 车型列表
     aliasList: [],     // 所有「车型-别名」

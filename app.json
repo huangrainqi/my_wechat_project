@@ -4,6 +4,7 @@
     "navigationStyle": "custom"
   },
   "pages": [
+    "pages/CrabDemo/CrabDemo",
     "pages/login/login",
     "pages/GdMap/GdMap",
     "pages/starj/starj",
