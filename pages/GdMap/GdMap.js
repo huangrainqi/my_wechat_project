@@ -6,7 +6,53 @@ Page({
     lat: 39.90923,
     lng: 116.39747,
     markers: [],
-    address: ''
+    address: '',
+    mapHeight: '70vh',   // 默认小图
+    x: 60,          // 初始位置
+    y: 60,
+    scale: 1 ,       // 初始缩放
+    isFull: false,          // 当前是否全屏
+    winWidth: 300,          // 小窗尺寸
+    winHeight: 300
+  },
+   /* 监听双指缩放 */
+   onScale(e) {
+    this.setData({ scale: e.detail.scale });
+  },
+
+  /* 一键还原 */
+  reset() {
+    this.setData({ x: 60, y: 60, scale: 1 });
+  },
+  toggleMapSize() {
+    console.log("toggle")
+    this.setData({
+      mapHeight: this.data.mapHeight === '70vh' ? '90vh' : '70vh'
+    })
+  },
+  toggleFull() {
+    const next = !this.data.isFull;
+    this.setData({
+      isFull: next,
+      x: next ? 0 : 60,
+      y: next ? 0 : 60,
+      scale: 1,
+      // 关键：全屏时给 100（=100%），小窗时给 300（=300rpx）
+      winWidth: next ? 100 : 300,
+      winHeight: next ? 100 : 300
+    });
+  },
+  zoomIn() {
+    let s = this.data.scale + 0.1;
+    console.log("slcale:",this.data.scale)
+    if (s > 2) s = 2;
+    this.setData({ scale: s });
+  },
+  zoomOut() {
+    console.log("slcale:",this.data.scale)
+    let s = this.data.scale - 0.1;
+    if (s < 0.1) s = 0.1;
+    this.setData({ scale: s });
   },
   onMapTap(e) {
     // 官方已换算好

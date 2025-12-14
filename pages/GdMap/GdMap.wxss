@@ -1,1 +1,23 @@
 /* pages/GdMap/GdMap.wxss */
+.title { text-align: center; padding: 10rpx; }
+
+.map-window {
+  border: 2rpx solid #1989fa;
+  border-radius: 12rpx;
+  overflow: hidden;
+  margin: 30rpx auto;        /* 居中 */
+  transition: none;          /* 可去掉动画，看效果更直观 */
+}
+
+.map-window.full {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.btn-bar {
+  text-align: center;
+  margin-top: 20rpx;
+}

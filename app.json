@@ -4,8 +4,8 @@
     "navigationStyle": "custom"
   },
   "pages": [
-    "pages/GdMap/GdMap",
     "pages/login/login",
+    "pages/GdMap/GdMap",
     "pages/starj/starj",
     "pages/demo/demo",
     "pages/test/test"
@@ -15,14 +15,14 @@
     "selectedColor": "#3cc51f",
     "backgroundColor": "#ffffff",
     "list": [
-     {
+      {
         "pagePath": "pages/starj/starj",
         "text": "starj"
       },
       {
         "pagePath": "pages/test/test",
         "text": "test"
-      } 
+      }
     ]
   },
   "style": "v2",

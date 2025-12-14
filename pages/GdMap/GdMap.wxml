@@ -1,16 +1,25 @@
 <!--pages/GdMap/GdMap.wxml-->
-<text>pages/GdMap/GdMap.wxml</text>
+<view class="title">小窗口地图</view>
 
+<!-- 固定小窗口 -->
+<view
+  class="map-window {{isFull ? 'full' : ''}}"
+  style="width:{{winWidth}}rpx;height:{{winHeight}}rpx;"
+>
+  <map
+    id="gaodeMap"
+    longitude="{{lng}}"
+    latitude="{{lat}}"
+    scale="16"
+    show-location
+    markers="{{markers}}"
+    style="width:100%;height:100%;"
+  />
+</view>
 
-<map id="gaodeMap"
-     longitude="{{lng}}"
-     latitude="{{lat}}"
-     scale="18"
-     show-location
-     markers="{{markers}}"
-     bindregionchange="onRegionChange"
-      bindtap="onMapTap"    
-     style="width:100%;height:70vh">
-</map>
-<!-- <button bindtap="getPOI">获取周边500m加油站</button> -->
-<!-- <text>{{address}}</text> -->
+<!-- 控制栏 -->
+<view class="btn-bar">
+  <button bindtap="toggleFull" type="primary" size="mini">
+    {{isFull ? '退出全屏' : '全屏'}}
+  </button>
+</view>
