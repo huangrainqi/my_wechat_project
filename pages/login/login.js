@@ -88,10 +88,10 @@ Page({
 
   doLogin() {
     const { username, password } = this.data;
-    if (username === 'test' ) {
+    if (username === 'demo' ) {
       wx.showToast({title: '登录成功', icon: 'success'});
-      wx.reLaunch({ url: '/pages/demo/demo' });
-      
+      // wx.reLaunch({ url: '/pages/demo/demo' });
+      wx.reLaunch({ url: '/pages/CrabDemo/CrabDemo' });
     } else if ( username == 'starj'){
       wx.showToast({title: '登录成功', icon: 'success'});
       wx.setStorageSync('hasLogin', true);

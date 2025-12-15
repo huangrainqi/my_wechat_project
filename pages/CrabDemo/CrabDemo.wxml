@@ -4,6 +4,11 @@
     <text class="title">MQTT 控制台</text>
     <text class="sub">实时物联 · 即刻触达</text>
   </view>
+
+  <view class="title1">
+    <text class="text1">车辆蟹形表演</text>
+  </view>
+
   <view class="status {{connected?'on':'off'}}">
     <text class="dot {{connected?'green':'red'}}">●</text>
     <text>{{connected?'已连接':'未连接'}}</text>
@@ -31,11 +36,11 @@
     <text class="label">Publish Topic</text>
     <input class="input" value="{{pubTopic}}" bindinput="onPubTopic" placeholder="/demo" placeholder-style="color:#6c7a89" />
   </view>
-  <!-- 卡片 3：消息 -->
+  <!-- 卡片 3：消息
   <view class="card">
     <text class="label">Payload</text>
     <textarea class="textarea" value="{{pubMsg}}" bindinput="onPubMsg" placeholder='{"msg":"hello"}' placeholder-style="color:#6c7a89" auto-height />
-  </view>
+  </view> -->
 
   <!-- 发布按钮 -->
   <view class="btn-row">

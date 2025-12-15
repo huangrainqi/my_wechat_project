@@ -50,8 +50,6 @@ Page({
   },
   doConnect() {
     console.log('doconnect');
-
-    wx.showToast({ title: 'btn', icon: 'none' });
     const { subTopic } = this.data
     if (!subTopic) {
       wx.showToast({ title: 'Sub Topic 不能为空', icon: 'none' })

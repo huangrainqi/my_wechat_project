@@ -14,7 +14,18 @@ page{
   font-family: -apple-system-font,Helvetica Neue,Arial;
 }
 
+.status {
+  display: flex;
+  margin-top: 56rpx;         /* 与上一个 view 的间距，想再大就调大 */
+  margin-bottom: 20rpx;
+}
 
+.title1 {
+  display: flex;
+  justify-content: center;   /* 水平居中 */
+  margin-top: 56rpx;         /* 与上一个 view 的间距，想再大就调大 */
+  margin-bottom: 20rpx;
+}
 
 .dot.green { color: #32CD32; }   /* 连接绿 */
 .dot.red   { color: #FF0000; }   /* 断连红 */
